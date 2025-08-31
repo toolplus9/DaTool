@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://toolplus9.github.io/DaTool/sitemap.xml
