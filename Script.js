@@ -1,119 +1,54 @@
-    <!-- JavaScript Files -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+// ======================
+// Category Switching
+// ======================
+document.addEventListener("DOMContentLoaded", () => {
+    const categoryButtons = document.querySelectorAll(".category-btn");
+    const toolSections = document.querySelectorAll(".tool-section");
 
-    <!-- PDF-Lib (for PDF tools) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
-
-    <!-- Single Combined Script -->
-    <script src="Script.js"></script>
-
-    <!-- Category Switching + Tool Button Events -->
-    <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      // =========================
-      // Category Switching
-      // =========================
-      const categoryBtns = document.querySelectorAll(".category-btn");
-      const panels = document.querySelectorAll(".tool-panel");
-
-      categoryBtns.forEach(btn => {
+    categoryButtons.forEach(btn => {
         btn.addEventListener("click", () => {
-          categoryBtns.forEach(b => b.classList.remove("active"));
-          btn.classList.add("active");
+            // Remove active class
+            categoryButtons.forEach(b => b.classList.remove("active"));
+            toolSections.forEach(sec => sec.classList.add("hidden"));
 
-          panels.forEach(p => p.classList.remove("active"));
-          const category = btn.dataset.category;
-          document.getElementById(category + "-panel").classList.add("active");
+            // Add active to clicked
+            btn.classList.add("active");
+            const target = btn.getAttribute("data-target");
+            const targetSection = document.getElementById(target);
+            if (targetSection) targetSection.classList.remove("hidden");
         });
-      });
-
-      // =========================
-      // Tool Buttons
-      // =========================
-
-      // Merge PDF
-      document.querySelector("[data-tool='merge-pdf'] .tool-btn")
-        .addEventListener("click", () => {
-          const input = document.createElement("input");
-          input.type = "file";
-          input.multiple = true;
-          input.accept = "application/pdf";
-          input.onchange = e => mergePDFs(e.target.files);
-          input.click();
-        });
-
-      // Compress Image
-      document.querySelector("[data-tool='image-compressor'] .tool-btn")
-        .addEventListener("click", () => {
-          const input = document.createElement("input");
-          input.type = "file";
-          input.accept = "image/*";
-          input.onchange = e => {
-            compressImage(e.target.files[0], 0.7, blob => {
-              const url = URL.createObjectURL(blob);
-              window.open(url);
-            });
-          };
-          input.click();
-        });
-
-      // Image Resizer
-      document.querySelector("[data-tool='image-resizer'] .tool-btn")
-        .addEventListener("click", () => {
-          const input = document.createElement("input");
-          input.type = "file";
-          input.accept = "image/*";
-          input.onchange = e => {
-            resizeImage(e.target.files[0], 300, 300, blob => {
-              const url = URL.createObjectURL(blob);
-              window.open(url);
-            });
-          };
-          input.click();
-        });
-
-      // Image Converter (to PNG)
-      document.querySelector("[data-tool='image-converter'] .tool-btn")
-        .addEventListener("click", () => {
-          const input = document.createElement("input");
-          input.type = "file";
-          input.accept = "image/*";
-          input.onchange = e => {
-            convertToPng(e.target.files[0], blob => {
-              const url = URL.createObjectURL(blob);
-              window.open(url);
-            });
-          };
-          input.click();
-        });
-
-      // Background Remover
-      document.querySelector("[data-tool='background-remover'] .tool-btn")
-        .addEventListener("click", () => {
-          const input = document.createElement("input");
-          input.type = "file";
-          input.accept = "image/*";
-          input.onchange = e => removeBackground(e.target.files[0]);
-          input.click();
-        });
-
-      // Color Picker Example
-      if (window.colorTools) {
-        const grid = document.getElementById("colorGrid");
-        window.colorTools.predefinedPalettes.material.forEach(color => {
-          const div = document.createElement("div");
-          div.className = "color-box";
-          div.style.background = color;
-          div.onclick = () => {
-            document.getElementById("colorPreview").style.background = color;
-            document.getElementById("hexCode").value = color;
-            const rgb = window.colorTools.hexToRgb(color);
-            document.getElementById("rgbCode").value = `rgb(${rgb.r},${rgb.g},${rgb.b})`;
-          };
-          grid.appendChild(div);
-        });
-      }
     });
-    </script>
-</body>
-</html>
+});
+
+// ======================
+// Example Tool Actions
+// ======================
+function mergePDF() {
+    alert("Merge PDF tool clicked! (Yahan API connect karna baaki hai)");
+}
+
+function splitPDF() {
+    alert("Split PDF tool clicked!");
+}
+
+function compressPDF() {
+    alert("Compress PDF tool clicked!");
+}
+
+function removeBG() {
+    // Example background remover
+    window.open("https://www.remove.bg/", "_blank");
+}
+
+function imageResize() {
+    alert("Image Resize tool clicked!");
+}
+
+function colorPicker() {
+    alert("Color Picker tool clicked!");
+}
+
+// ======================
+// Safe check (no crash)
+// ======================
+console.log("✅ Script.js loaded successfully");
