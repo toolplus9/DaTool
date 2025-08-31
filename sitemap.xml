@@ -1,30 +1,70 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
-  <!-- Main Home Page -->
+  <!-- Main Page -->
   <url>
     <loc>https://toolplus9.github.io/DaTool/</loc>
     <priority>1.0</priority>
   </url>
 
-  <!-- Tools Pages -->
-  <url>
-    <loc>https://toolplus9.github.io/DaTool/image-compressor.html</loc>
-    <priority>0.9</priority>
-  </url>
+  <!-- PDF Tools -->
+  <url><loc>https://toolplus9.github.io/DaTool/merge-pdf.html</loc></url>
+  <url><loc>https://toolplus9.github.io/DaTool/split-pdf.html</loc></url>
+  <url><loc>https://toolplus9.github.io/DaTool/compress-pdf.html</loc></url>
+  <url><loc>https://toolplus9.github.io/DaTool/pdf-to-jpg.html</loc></url>
+  <url><loc>https://toolplus9.github.io/DaTool/jpg-to-pdf.html</loc></url>
+  <url><loc>https://toolplus9.github.io/DaTool/pdf-to-word.html</loc></url>
+  <url><loc>https://toolplus9.github.io/DaTool/pdf-to-excel.html</loc></url>
+  <url><loc>https://toolplus9.github.io/DaTool/pdf-to-ppt.html</loc></url>
+  <url><loc>https://toolplus9.github.io/DaTool/unlock-pdf.html</loc></url>
+  <url><loc>https://toolplus9.github.io/DaTool/protect-pdf.html</loc></url>
 
-  <!-- Future Tools (example - agar aur banao) -->
-  <url>
-    <loc>https://toolplus9.github.io/DaTool/pdf-merge.html</loc>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://toolplus9.github.io/DaTool/pdf-split.html</loc>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://toolplus9.github.io/DaTool/background-remover.html</loc>
-    <priority>0.8</priority>
-  </url>
+  <!-- Image Tools -->
+  <url><loc>https://toolplus9.github.io/DaTool/background-remover.html</loc></url>
+  <url><loc>https://toolplus9.github.io/DaTool/image-compressor.html</loc></url>
+  <url><loc>https://toolplus9.github.io/DaTool/image-converter.html</loc></url>
+  <url><loc>https://toolplus9.github.io/DaTool/image-resizer.html</loc></url>
+  <url><loc>https://toolplus9.github.io/DaTool/crop-image.html</loc></url>
+  <url><loc>https://toolplus9.github.io/DaTool/rotate-image.html</loc></url>
+  <url><loc>https://toolplus9.github.io/DaTool/flip-image.html</loc></url>
+  <url><loc>https://toolplus9.github.io/DaTool/grayscale.html</loc></url>
+  <url><loc>https://toolplus9.github.io/DaTool/image-to-base64.html</loc></url>
+  <url><loc>https://toolplus9.github.io/DaTool/image-previewer.html</loc></url>
+
+  <!-- Color Tools -->
+  <url><loc>https://toolplus9.github.io/DaTool/color-picker.html</loc></url>
+  <url><loc>https://toolplus9.github.io/DaTool/gradient-generator.html</loc></url>
+  <url><loc>https://toolplus9.github.io/DaTool/color-palette.html</loc></url>
+  <url><loc>https://toolplus9.github.io/DaTool/contrast-checker.html</loc></url>
+  <url><loc>https://toolplus9.github.io/DaTool/color-blind-simulator.html</loc></url>
+  <url><loc>https://toolplus9.github.io/DaTool/rgb-to-hex.html</loc></url>
+  <url><loc>https://toolplus9.github.io/DaTool/hex-to-rgb.html</loc></url>
+  <url><loc>https://toolplus9.github.io/DaTool/shade-generator.html</loc></url>
+  <url><loc>https://toolplus9.github.io/DaTool/random-color.html</loc></url>
+  <url><loc>https://toolplus9.github.io/DaTool/color-analyzer.html</loc></url>
+
+  <!-- Conversion Tools -->
+  <url><loc>https://toolplus9.github.io/DaTool/word-to-pdf.html</loc></url>
+  <url><loc>https://toolplus9.github.io/DaTool/excel-to-pdf.html</loc></url>
+  <url><loc>https://toolplus9.github.io/DaTool/ppt-to-pdf.html</loc></url>
+  <url><loc>https://toolplus9.github.io/DaTool/text-to-pdf.html</loc></url>
+  <url><loc>https://toolplus9.github.io/DaTool/pdf-to-text.html</loc></url>
+  <url><loc>https://toolplus9.github.io/DaTool/image-to-pdf.html</loc></url>
+  <url><loc>https://toolplus9.github.io/DaTool/pdf-to-image.html</loc></url>
+  <url><loc>https://toolplus9.github.io/DaTool/markdown-to-html.html</loc></url>
+  <url><loc>https://toolplus9.github.io/DaTool/html-to-pdf.html</loc></url>
+  <url><loc>https://toolplus9.github.io/DaTool/csv-to-json.html</loc></url>
+
+  <!-- Advanced Tools -->
+  <url><loc>https://toolplus9.github.io/DaTool/qr-generator.html</loc></url>
+  <url><loc>https://toolplus9.github.io/DaTool/text-to-speech.html</loc></url>
+  <url><loc>https://toolplus9.github.io/DaTool/audio-to-text.html</loc></url>
+  <url><loc>https://toolplus9.github.io/DaTool/unit-converter.html</loc></url>
+  <url><loc>https://toolplus9.github.io/DaTool/currency-converter.html</loc></url>
+  <url><loc>https://toolplus9.github.io/DaTool/password-generator.html</loc></url>
+  <url><loc>https://toolplus9.github.io/DaTool/base64-encoder.html</loc></url>
+  <url><loc>https://toolplus9.github.io/DaTool/base64-decoder.html</loc></url>
+  <url><loc>https://toolplus9.github.io/DaTool/text-encryptor.html</loc></url>
+  <url><loc>https://toolplus9.github.io/DaTool/markdown-editor.html</loc></url>
 
 </urlset>
