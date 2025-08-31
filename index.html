@@ -1,163 +1,192 @@
-<!-- Tool Panels -->
-<div class="tool-panels">
-    <!-- PDF Tools -->
-    <div class="tool-panel active" id="pdf-panel">
-        <div class="tools-grid">
-            <div class="tool-card" data-tool="merge-pdf">
-                <div class="tool-icon"><i data-feather="layers"></i></div>
-                <h3>Merge PDF</h3>
-                <button class="tool-btn btn-3d">Open</button>
+# Let's generate the complete fixed HTML file with all 5 categories and 10 tools each.
+html_code = """<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaTools - Professional Online Toolkit</title>
+    <meta name="description" content="DaTools - Your go-to platform for PDF tools, image editing, color picking, and creative solutions. Fast, easy, and intuitive online tools.">
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="Styles.css">
+    <link rel="stylesheet" href="animations.css">
+    
+    <!-- External Libraries -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js"></script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar navbar-expand-lg">
+            <div class="container">
+                <a class="navbar-brand" href="#home">
+                    <span class="brand-icon">🔧</span>
+                    <span class="brand-text">DaTools</span>
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item"><a class="nav-link" href="#home">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#tools">Tools</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+                    </ul>
+                </div>
             </div>
-            <div class="tool-card" data-tool="split-pdf">
-                <div class="tool-icon"><i data-feather="scissors"></i></div>
-                <h3>Split PDF</h3>
-                <button class="tool-btn btn-3d">Open</button>
-            </div>
-            <div class="tool-card" data-tool="compress-pdf">
-                <div class="tool-icon"><i data-feather="minimize-2"></i></div>
-                <h3>Compress PDF</h3>
-                <button class="tool-btn btn-3d">Open</button>
-            </div>
-            <div class="tool-card" data-tool="pdf-to-jpg">
-                <div class="tool-icon"><i data-feather="camera"></i></div>
-                <h3>PDF to JPG</h3>
-                <button class="tool-btn btn-3d">Open</button>
-            </div>
-            <div class="tool-card" data-tool="jpg-to-pdf">
-                <div class="tool-icon"><i data-feather="file-plus"></i></div>
-                <h3>JPG to PDF</h3>
-                <button class="tool-btn btn-3d">Open</button>
-            </div>
-            <div class="tool-card" data-tool="pdf-to-word">
-                <div class="tool-icon"><i data-feather="file-text"></i></div>
-                <h3>PDF to Word</h3>
-                <button class="tool-btn btn-3d">Open</button>
-            </div>
-            <div class="tool-card" data-tool="pdf-to-excel">
-                <div class="tool-icon"><i data-feather="grid"></i></div>
-                <h3>PDF to Excel</h3>
-                <button class="tool-btn btn-3d">Open</button>
-            </div>
-            <div class="tool-card" data-tool="pdf-to-ppt">
-                <div class="tool-icon"><i data-feather="monitor"></i></div>
-                <h3>PDF to PPT</h3>
-                <button class="tool-btn btn-3d">Open</button>
-            </div>
-            <div class="tool-card" data-tool="unlock-pdf">
-                <div class="tool-icon"><i data-feather="unlock"></i></div>
-                <h3>Unlock PDF</h3>
-                <button class="tool-btn btn-3d">Open</button>
-            </div>
-            <div class="tool-card" data-tool="protect-pdf">
-                <div class="tool-icon"><i data-feather="lock"></i></div>
-                <h3>Protect PDF</h3>
-                <button class="tool-btn btn-3d">Open</button>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero-section">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title animate-fade-in">Welcome to DaTools</h1>
+                <p class="hero-subtitle animate-fade-in-delay">Your complete online toolkit for PDF processing, image editing, and creative solutions</p>
+                <div class="hero-buttons animate-fade-in-delay-2">
+                    <button class="btn btn-primary btn-3d" onclick="document.getElementById('tools').scrollIntoView({behavior:'smooth'})">
+                        <i data-feather="tool"></i>
+                        Explore Tools
+                    </button>
+                </div>
             </div>
         </div>
-    </div>
+    </section>
 
-    <!-- Image Tools -->
-    <div class="tool-panel" id="image-panel">
-        <div class="tools-grid">
-            <div class="tool-card" data-tool="background-remover">
-                <div class="tool-icon"><i data-feather="crop"></i></div>
-                <h3>Background Remover</h3>
-                <button class="tool-btn btn-3d">Open</button>
+    <!-- Tools Section -->
+    <section id="tools" class="tools-section">
+        <div class="container">
+            <h2 class="section-title">Tool Categories</h2>
+
+            <!-- Tool Categories Navigation -->
+            <div class="tool-categories">
+                <button class="category-btn active" data-category="pdf"><i data-feather="file-text"></i> PDF Tools</button>
+                <button class="category-btn" data-category="image"><i data-feather="image"></i> Image Tools</button>
+                <button class="category-btn" data-category="color"><i data-feather="droplet"></i> Color Tools</button>
+                <button class="category-btn" data-category="conversion"><i data-feather="refresh-cw"></i> Conversion</button>
+                <button class="category-btn" data-category="advanced"><i data-feather="zap"></i> Advanced</button>
             </div>
-            <div class="tool-card" data-tool="image-compressor">
-                <div class="tool-icon"><i data-feather="minimize"></i></div>
-                <h3>Image Compressor</h3>
-                <button class="tool-btn btn-3d">Open</button>
-            </div>
-            <div class="tool-card" data-tool="image-converter">
-                <div class="tool-icon"><i data-feather="repeat"></i></div>
-                <h3>Image Converter</h3>
-                <button class="tool-btn btn-3d">Open</button>
-            </div>
-            <div class="tool-card" data-tool="image-resizer">
-                <div class="tool-icon"><i data-feather="maximize"></i></div>
-                <h3>Image Resizer</h3>
-                <button class="tool-btn btn-3d">Open</button>
-            </div>
-            <div class="tool-card" data-tool="crop-image">
-                <div class="tool-icon"><i data-feather="scissors"></i></div>
-                <h3>Crop Image</h3>
-                <button class="tool-btn btn-3d">Open</button>
-            </div>
-            <div class="tool-card" data-tool="rotate-image">
-                <div class="tool-icon"><i data-feather="rotate-ccw"></i></div>
-                <h3>Rotate Image</h3>
-                <button class="tool-btn btn-3d">Open</button>
-            </div>
-            <div class="tool-card" data-tool="flip-image">
-                <div class="tool-icon"><i data-feather="refresh-cw"></i></div>
-                <h3>Flip Image</h3>
-                <button class="tool-btn btn-3d">Open</button>
-            </div>
-            <div class="tool-card" data-tool="grayscale-converter">
-                <div class="tool-icon"><i data-feather="droplet"></i></div>
-                <h3>Grayscale Converter</h3>
-                <button class="tool-btn btn-3d">Open</button>
-            </div>
-            <div class="tool-card" data-tool="image-to-base64">
-                <div class="tool-icon"><i data-feather="code"></i></div>
-                <h3>Image to Base64</h3>
-                <button class="tool-btn btn-3d">Open</button>
-            </div>
-            <div class="tool-card" data-tool="image-previewer">
-                <div class="tool-icon"><i data-feather="eye"></i></div>
-                <h3>Image Previewer</h3>
-                <button class="tool-btn btn-3d">Open</button>
+
+            <!-- Tool Panels -->
+            <div class="tool-panels">
+                <!-- PDF Tools -->
+                <div class="tool-panel active" id="pdf-panel">
+                    <div class="tools-grid">
+                        <div class="tool-card"><div class="tool-icon"><i data-feather="layers"></i></div><h3>Merge PDF</h3><button class="tool-btn btn-3d">Open</button></div>
+                        <div class="tool-card"><div class="tool-icon"><i data-feather="scissors"></i></div><h3>Split PDF</h3><button class="tool-btn btn-3d">Open</button></div>
+                        <div class="tool-card"><div class="tool-icon"><i data-feather="minimize-2"></i></div><h3>Compress PDF</h3><button class="tool-btn btn-3d">Open</button></div>
+                        <div class="tool-card"><div class="tool-icon"><i data-feather="camera"></i></div><h3>PDF to JPG</h3><button class="tool-btn btn-3d">Open</button></div>
+                        <div class="tool-card"><div class="tool-icon"><i data-feather="file-plus"></i></div><h3>JPG to PDF</h3><button class="tool-btn btn-3d">Open</button></div>
+                        <div class="tool-card"><div class="tool-icon"><i data-feather="file-text"></i></div><h3>PDF to Word</h3><button class="tool-btn btn-3d">Open</button></div>
+                        <div class="tool-card"><div class="tool-icon"><i data-feather="grid"></i></div><h3>PDF to Excel</h3><button class="tool-btn btn-3d">Open</button></div>
+                        <div class="tool-card"><div class="tool-icon"><i data-feather="monitor"></i></div><h3>PDF to PPT</h3><button class="tool-btn btn-3d">Open</button></div>
+                        <div class="tool-card"><div class="tool-icon"><i data-feather="unlock"></i></div><h3>Unlock PDF</h3><button class="tool-btn btn-3d">Open</button></div>
+                        <div class="tool-card"><div class="tool-icon"><i data-feather="lock"></i></div><h3>Protect PDF</h3><button class="tool-btn btn-3d">Open</button></div>
+                    </div>
+                </div>
+
+                <!-- Image Tools -->
+                <div class="tool-panel" id="image-panel">
+                    <div class="tools-grid">
+                        <div class="tool-card"><div class="tool-icon"><i data-feather="crop"></i></div><h3>Background Remover</h3><button class="tool-btn btn-3d">Open</button></div>
+                        <div class="tool-card"><div class="tool-icon"><i data-feather="minimize"></i></div><h3>Image Compressor</h3><button class="tool-btn btn-3d">Open</button></div>
+                        <div class="tool-card"><div class="tool-icon"><i data-feather="repeat"></i></div><h3>Image Converter</h3><button class="tool-btn btn-3d">Open</button></div>
+                        <div class="tool-card"><div class="tool-icon"><i data-feather="maximize"></i></div><h3>Image Resizer</h3><button class="tool-btn btn-3d">Open</button></div>
+                        <div class="tool-card"><div class="tool-icon"><i data-feather="scissors"></i></div><h3>Crop Image</h3><button class="tool-btn btn-3d">Open</button></div>
+                        <div class="tool-card"><div class="tool-icon"><i data-feather="rotate-ccw"></i></div><h3>Rotate Image</h3><button class="tool-btn btn-3d">Open</button></div>
+                        <div class="tool-card"><div class="tool-icon"><i data-feather="refresh-cw"></i></div><h3>Flip Image</h3><button class="tool-btn btn-3d">Open</button></div>
+                        <div class="tool-card"><div class="tool-icon"><i data-feather="droplet"></i></div><h3>Grayscale Converter</h3><button class="tool-btn btn-3d">Open</button></div>
+                        <div class="tool-card"><div class="tool-icon"><i data-feather="code"></i></div><h3>Image to Base64</h3><button class="tool-btn btn-3d">Open</button></div>
+                        <div class="tool-card"><div class="tool-icon"><i data-feather="eye"></i></div><h3>Image Previewer</h3><button class="tool-btn btn-3d">Open</button></div>
+                    </div>
+                </div>
+
+                <!-- Color Tools -->
+                <div class="tool-panel" id="color-panel">
+                    <div class="tools-grid">
+                        <div class="tool-card"><div class="tool-icon"><i data-feather="droplet"></i></div><h3>Color Picker</h3><button class="tool-btn btn-3d">Open</button></div>
+                        <div class="tool-card"><div class="tool-icon"><i data-feather="sun"></i></div><h3>Gradient Generator</h3><button class="tool-btn btn-3d">Open</button></div>
+                        <div class="tool-card"><div class="tool-icon"><i data-feather="grid"></i></div><h3>Color Palette</h3><button class="tool-btn btn-3d">Open</button></div>
+                        <div class="tool-card"><div class="tool-icon"><i data-feather="check"></i></div><h3>Contrast Checker</h3><button class="tool-btn btn-3d">Open</button></div>
+                        <div class="tool-card"><div class="tool-icon"><i data-feather="eye-off"></i></div><h3>Color Blind Simulator</h3><button class="tool-btn btn-3d">Open</button></div>
+                        <div class="tool-card"><div class="tool-icon"><i data-feather="hash"></i></div><h3>RGB to HEX</h3><button class="tool-btn btn-3d">Open</button></div>
+                        <div class="tool-card"><div class="tool-icon"><i data-feather="hash"></i></div><h3>HEX to RGB</h3><button class="tool-btn btn-3d">Open</button></div>
+                        <div class="tool-card"><div class="tool-icon"><i data-feather="droplet"></i></div><h3>Shade Generator</h3><button class="tool-btn btn-3d">Open</button></div>
+                        <div class="tool-card"><div class="tool-icon"><i data-feather="shuffle"></i></div><h3>Random Color</h3><button class="tool-btn btn-3d">Open</button></div>
+                        <div class="tool-card"><div class="tool-icon"><i data-feather="activity"></i></div><h3>Color Analyzer</h3><button class="tool-btn btn-3d">Open</button></div>
+                    </div>
+                </div>
+
+                <!-- Conversion -->
+                <div class="tool-panel" id="conversion-panel">
+                    <div class="tools-grid">
+                        <div class="tool-card"><div class="tool-icon"><i data-feather="file-text"></i></div><h3>Word to PDF</h3><button class="tool-btn btn-3d">Open</button></div>
+                        <div class="tool-card"><div class="tool-icon"><i data-feather="grid"></i></div><h3>Excel to PDF</h3><button class="tool-btn btn-3d">Open</button></div>
+                        <div class="tool-card"><div class="tool-icon"><i data-feather="monitor"></i></div><h3>PPT to PDF</h3><button class="tool-btn btn-3d">Open</button></div>
+                        <div class="tool-card"><div class="tool-icon"><i data-feather="type"></i></div><h3>Text to PDF</h3><button class="tool-btn btn-3d">Open</button></div>
+                        <div class="tool-card"><div class="tool-icon"><i data-feather="file"></i></div><h3>PDF to Text</h3><button class="tool-btn btn-3d">Open</button></div>
+                        <div class="tool-card"><div class="tool-icon"><i data-feather="image"></i></div><h3>Image to PDF</h3><button class="tool-btn btn-3d">Open</button></div>
+                        <div class="tool-card"><div class="tool-icon"><i data-feather="camera"></i></div><h3>PDF to Image</h3><button class="tool-btn btn-3d">Open</button></div>
+                        <div class="tool-card"><div class="tool-icon"><i data-feather="code"></i></div><h3>Markdown to HTML</h3><button class="tool-btn btn-3d">Open</button></div>
+                        <div class="tool-card"><div class="tool-icon"><i data-feather="file"></i></div><h3>HTML to PDF</h3><button class="tool-btn btn-3d">Open</button></div>
+                        <div class="tool-card"><div class="tool-icon"><i data-feather="file"></i></div><h3>CSV to JSON</h3><button class="tool-btn btn-3d">Open</button></div>
+                    </div>
+                </div>
+
+                <!-- Advanced -->
+                <div class="tool-panel" id="advanced-panel">
+                    <div class="tools-grid">
+                        <div class="tool-card"><div class="tool-icon"><i data-feather="square"></i></div><h3>QR Generator</h3><button class="tool-btn btn-3d">Open</button></div>
+                        <div class="tool-card"><div class="tool-icon"><i data-feather="volume-2"></i></div><h3>Text to Speech</h3><button class="tool-btn btn-3d">Open</button></div>
+                        <div class="tool-card"><div class="tool-icon"><i data-feather="mic"></i></div><h3>Audio to Text</h3><button class="tool-btn btn-3d">Open</button></div>
+                        <div class="tool-card"><div class="tool-icon"><i data-feather="box"></i></div><h3>Unit Converter</h3><button class="tool-btn btn-3d">Open</button></div>
+                        <div class="tool-card"><div class="tool-icon"><i data-feather="dollar-sign"></i></div><h3>Currency Converter</h3><button class="tool-btn btn-3d">Open</button></div>
+                        <div class="tool-card"><div class="tool-icon"><i data-feather="key"></i></div><h3>Password Generator</h3><button class="tool-btn btn-3d">Open</button></div>
+                        <div class="tool-card"><div class="tool-icon"><i data-feather="code"></i></div><h3>Base64 Encoder</h3><button class="tool-btn btn-3d">Open</button></div>
+                        <div class="tool-card"><div class="tool-icon"><i data-feather="code"></i></div><h3>Base64 Decoder</h3><button class="tool-btn btn-3d">Open</button></div>
+                        <div class="tool-card"><div class="tool-icon"><i data-feather="lock"></i></div><h3>Text Encryptor</h3><button class="tool-btn btn-3d">Open</button></div>
+                        <div class="tool-card"><div class="tool-icon"><i data-feather="edit"></i></div><h3>Markdown Editor</h3><button class="tool-btn btn-3d">Open</button></div>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
+    </section>
 
-    <!-- Color Tools -->
-<div class="tool-panel" id="color-panel">
-    <div class="tools-grid">
-        <div class="tool-card" data-tool="color-picker"><div class="tool-icon"><i data-feather="droplet"></i></div><h3>Color Picker</h3><button class="tool-btn btn-3d">Open</button></div>
-        <div class="tool-card" data-tool="gradient-generator"><div class="tool-icon"><i data-feather="sun"></i></div><h3>Gradient Generator</h3><button class="tool-btn btn-3d">Open</button></div>
-        <div class="tool-card" data-tool="color-palette"><div class="tool-icon"><i data-feather="grid"></i></div><h3>Color Palette</h3><button class="tool-btn btn-3d">Open</button></div>
-        <div class="tool-card" data-tool="contrast-checker"><div class="tool-icon"><i data-feather="check"></i></div><h3>Contrast Checker</h3><button class="tool-btn btn-3d">Open</button></div>
-        <div class="tool-card" data-tool="color-blind-simulator"><div class="tool-icon"><i data-feather="eye-off"></i></div><h3>Color Blind Simulator</h3><button class="tool-btn btn-3d">Open</button></div>
-        <div class="tool-card" data-tool="rgb-to-hex"><div class="tool-icon"><i data-feather="hash"></i></div><h3>RGB to HEX</h3><button class="tool-btn btn-3d">Open</button></div>
-        <div class="tool-card" data-tool="hex-to-rgb"><div class="tool-icon"><i data-feather="hash"></i></div><h3>HEX to RGB</h3><button class="tool-btn btn-3d">Open</button></div>
-        <div class="tool-card" data-tool="shade-generator"><div class="tool-icon"><i data-feather="droplet"></i></div><h3>Shade Generator</h3><button class="tool-btn btn-3d">Open</button></div>
-        <div class="tool-card" data-tool="color-randomizer"><div class="tool-icon"><i data-feather="shuffle"></i></div><h3>Random Color</h3><button class="tool-btn btn-3d">Open</button></div>
-        <div class="tool-card" data-tool="color-analyzer"><div class="tool-icon"><i data-feather="activity"></i></div><h3>Color Analyzer</h3><button class="tool-btn btn-3d">Open</button></div>
-    </div>
-</div>
-
-
-    <!-- Conversion -->
-    <div class="tool-panel" id="conversion-panel">
-        <div class="tools-grid">
-            <div class="tool-card" data-tool="word-to-pdf"><div class="tool-icon"><i data-feather="file-text"></i></div><h3>Word to PDF</h3><button class="tool-btn btn-3d">Open</button></div>
-            <div class="tool-card" data-tool="excel-to-pdf"><div class="tool-icon"><i data-feather="grid"></i></div><h3>Excel to PDF</h3><button class="tool-btn btn-3d">Open</button></div>
-            <div class="tool-card" data-tool="ppt-to-pdf"><div class="tool-icon"><i data-feather="monitor"></i></div><h3>PPT to PDF</h3><button class="tool-btn btn-3d">Open</button></div>
-            <div class="tool-card" data-tool="text-to-pdf"><div class="tool-icon"><i data-feather="type"></i></div><h3>Text to PDF</h3><button class="tool-btn btn-3d">Open</button></div>
-            <div class="tool-card" data-tool="pdf-to-text"><div class="tool-icon"><i data-feather="file"></i></div><h3>PDF to Text</h3><button class="tool-btn btn-3d">Open</button></div>
-            <div class="tool-card" data-tool="image-to-pdf"><div class="tool-icon"><i data-feather="image"></i></div><h3>Image to PDF</h3><button class="tool-btn btn-3d">Open</button></div>
-            <div class="tool-card" data-tool="pdf-to-image"><div class="tool-icon"><i data-feather="camera"></i></div><h3>PDF to Image</h3><button class="tool-btn btn-3d">Open</button></div>
-            <div class="tool-card" data-tool="markdown-to-html"><div class="tool-icon"><i data-feather="code"></i></div><h3>Markdown to HTML</h3><button class="tool-btn btn-3d">Open</button></div>
-            <div class="tool-card" data-tool="html-to-pdf"><div class="tool-icon"><i data-feather="file"></i></div><h3>HTML to PDF</h3><button class="tool-btn btn-3d">Open</button></div>
-            <div class="tool-card" data-tool="csv-to-json"><div class="tool-icon"><i data-feather="file"></i></div><h3>CSV to JSON</h3><button class="tool-btn btn-3d">Open</button></div>
+    <!-- About Section -->
+    <section id="about" class="about-section">
+        <div class="container">
+            <h2 class="section-title">About DaTools</h2>
+            <p>DaTools is your go-to platform for PDF, image, and creative tools.</p>
         </div>
-    </div>
+    </section>
 
-    <!-- Advanced -->
-    <div class="tool-panel" id="advanced-panel">
-        <div class="tools-grid">
-            <div class="tool-card" data-tool="qr-generator"><div class="tool-icon"><i data-feather="square"></i></div><h3>QR Generator</h3><button class="tool-btn btn-3d">Open</button></div>
-            <div class="tool-card" data-tool="text-to-speech"><div class="tool-icon"><i data-feather="volume-2"></i></div><h3>Text to Speech</h3><button class="tool-btn btn-3d">Open</button></div>
-            <div class="tool-card" data-tool="audio-to-text"><div class="tool-icon"><i data-feather="mic"></i></div><h3>Audio to Text</h3><button class="tool-btn btn-3d">Open</button></div>
-            <div class="tool-card" data-tool="unit-converter"><div class="tool-icon"><i data-feather="box"></i></div><h3>Unit Converter</h3><button class="tool-btn btn-3d">Open</button></div>
-            <div class="tool-card" data-tool="currency-converter"><div class="tool-icon"><i data-feather="dollar-sign"></i></div><h3>Currency Converter</h3><button class="tool-btn btn-3d">Open</button></div>
-            <div class="tool-card" data-tool="password-generator"><div class="tool-icon"><i data-feather="key"></i></div><h3>Password Generator</h3><button class="tool-btn btn-3d">Open</button></div>
-            <div class="tool-card" data-tool="base64-encoder"><div class="tool-icon"><i data-feather="code"></i></div><h3>Base64 Encoder</h3><button class="tool-btn btn-3d">Open</button></div>
-            <div class="tool-card" data-tool="base64-decoder"><div class="tool-icon"><i data-feather="code"></i></div><h3>Base64 Decoder</h3><button class="tool-btn btn-3d">Open</button></div>
-            <div class="tool-card" data-tool="text-encryptor"><div class="tool-icon"><i data-feather="lock"></i></div><h3>Text Encryptor</h3><button class="tool-btn btn-3d">Open</button></div>
-            <div class="tool-card" data-tool="markdown-editor"><div class="tool-icon"><i data-feather="edit"></i></div><h3>Markdown Editor</h3><button class="tool-btn btn-3d">Open</button></div>
+    <!-- Contact Section -->
+    <section id="contact" class="contact-section">
+        <div class="container text-center">
+            <h2 class="section-title">Contact</h2>
+            <p>Email: <a href="mailto:toolplus9@gmail.com">toolplus9@gmail.com</a></p>
         </div>
-    </div>
-</div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container text-center">
+            <p>&copy; 2025 DaTools. Made by Syed Afnan</p>
+        </div>
+    </footer>
+
+    <!-- JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="Script.js"></script>
+    <script>feather.replace();</script>
+</body>
+</html>"""
+
+# Save as index.html so user can download and upload to GitHub repo
+with open("/mnt/data/index.html", "w", encoding="utf-8") as f:
+    f.write(html_code)
+
+"/mnt/data/index.html"
