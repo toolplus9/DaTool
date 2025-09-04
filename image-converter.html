@@ -1,0 +1,353 @@
+<!DOCTYPE html><html lang="ur" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Image Converter — ToolPlus9 Style</title>
+  <style>
+    :root{
+      /* Match this palette to your site */
+      --bg: #0b0f1a;
+      --card: rgba(255,255,255,0.05);
+      --card-2: rgba(255,255,255,0.08);
+      --text: #e8eefc;
+      --muted: #a6b0cf;
+      --brand: #7c5cff;    /* primary accent */
+      --brand-2: #00d4ff;  /* secondary accent */
+      --ok: #18c964;
+      --warn: #ffcc00;
+      --err: #ff4d6d;
+      --radius: 20px;
+      --shadow: 0 10px 30px rgba(0,0,0,0.35);
+      --glass: backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    }*{box-sizing: border-box}
+html,body{height:100%}
+body{
+  margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Noto Naskh Arabic, Helvetica, Arial;
+  background: radial-gradient(1200px 600px at 80% -10%, rgba(124,92,255,0.15), transparent),
+              radial-gradient(900px 500px at -10% 110%, rgba(0,212,255,0.15), transparent),
+              var(--bg);
+  color: var(--text);
+  letter-spacing: .1px;
+}
+
+.container{max-width:1100px; margin:40px auto; padding:0 16px}
+
+.hero{
+  position:relative; padding:28px; border-radius: var(--radius);
+  background: linear-gradient(135deg, rgba(124,92,255,.18), rgba(0,212,255,.18));
+  box-shadow: var(--shadow);
+  overflow:hidden;
+  border: 1px solid rgba(255,255,255,0.18);
+}
+.hero:before{
+  content:""; position:absolute; inset:-1px; border-radius: inherit;
+  background: conic-gradient(from 0deg, transparent 0 330deg, rgba(124,92,255,.75) 330deg 360deg);
+  filter: blur(18px); opacity:.45; animation: ring 6s linear infinite;
+  pointer-events: none;
+}
+@keyframes ring{to{transform: rotate(1turn)}}
+.title{font-size: clamp(22px, 4vw, 34px); margin: 0 0 6px 0; font-weight:800}
+.sub{margin:0; color: var(--muted); font-size: 14px}
+
+.grid{display:grid; grid-template-columns: 1.1fr .9fr; gap: 18px; margin-top:18px}
+@media (max-width: 900px){.grid{grid-template-columns: 1fr}}
+
+.card{background: var(--card); border: 1px solid rgba(255,255,255,.12); border-radius: var(--radius); box-shadow: var(--shadow)}
+
+.drop{
+  padding: 22px; text-align:center; position:relative; isolation:isolate; cursor: pointer;
+}
+.drop .dash{
+  border: 2px dashed rgba(255,255,255,.24); border-radius: calc(var(--radius) - 10px);
+  padding: 30px; transition: .25s ease; position: relative;
+}
+.drop:hover .dash{border-color: var(--brand-2); background: rgba(255,255,255,0.04)}
+.drop input{position:absolute; inset:0; width:100%; height:100%; opacity:0; cursor:pointer}
+.drop .icon{font-size:42px; line-height:1;}
+.pulse{position:absolute; inset: 8px; border-radius: inherit; pointer-events: none; opacity:.25;}
+.pulse:before,.pulse:after{
+  content:""; position:absolute; inset:0; border-radius: inherit; border: 1px solid var(--brand);
+  animation: pulse 2.4s ease-in-out infinite; box-shadow: 0 0 30px rgba(124,92,255,.35);
+}
+.pulse:after{animation-delay:1.2s}
+@keyframes pulse{0%{transform:scale(.98); opacity:.65} 70%{transform: scale(1.02); opacity:.15} 100%{opacity:0}}
+
+.controls{padding: 18px}
+.row{display:grid; grid-template-columns: 1fr 1fr; gap: 12px}
+.row+.row{margin-top:12px}
+.ctl{
+  background: var(--card-2); border-radius: 14px; padding: 12px; border:1px solid rgba(255,255,255,.12)
+}
+label{display:block; font-size:12px; color: var(--muted); margin-bottom:6px}
+select, input[type="number"], input[type="range"], input[type="color"], button{
+  width:100%; padding: 10px 12px; border-radius: 12px; border:1px solid rgba(255,255,255,.15);
+  background: rgba(0,0,0,.25); color: var(--text); outline:none; transition:.2s ease;
+}
+select:focus, input:focus, button:focus{border-color: var(--brand)}
+
+.hint{font-size: 12px; color: var(--muted); margin-top:6px}
+
+.actions{display:flex; gap:10px; margin-top: 14px}
+.btn{position:relative; overflow:hidden}
+.btn.primary{
+  background: linear-gradient(90deg, var(--brand), var(--brand-2)); border:none; font-weight:700;
+  box-shadow: 0 8px 24px rgba(124,92,255,.35);
+}
+.btn.primary .shine{
+  content:""; position:absolute; top:-120%; left:-40%; width:60%; height:300%; transform: rotate(20deg);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.6), transparent);
+  animation: shine 2.8s linear infinite;
+}
+@keyframes shine{to{left:140%}}
+
+.list{padding: 16px}
+.item{display:grid; grid-template-columns: 70px 1fr auto; gap: 12px; align-items:center; padding:10px; border-radius:14px; background: rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); margin-bottom:10px}
+.thumb{width:70px; height:70px; border-radius:12px; background:#111; display:grid; place-items:center; overflow:hidden; border:1px solid rgba(255,255,255,.1)}
+.thumb img{max-width:100%; max-height:100%}
+.meta{font-size:12px; color: var(--muted)}
+.name{font-size:14px; color: var(--text); font-weight:700}
+.badge{font-size:11px; padding:4px 8px; border-radius:999px; background: rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.1)}
+
+.status{justify-self:end; text-align:right}
+.status .ok{color: var(--ok)}
+.status .err{color: var(--err)}
+.status .spin{display:inline-block; width:16px; height:16px; border:2px solid rgba(255,255,255,.3); border-top-color: var(--brand); border-radius:50%; animation: s .9s linear infinite}
+@keyframes s{to{transform:rotate(1turn)}}
+
+.footer{margin-top:16px; text-align:center; font-size:12px; color:var(--muted)}
+.link{color: var(--brand-2); text-decoration:none}
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <section class="hero">
+      <h1 class="title">امیج کنورٹر (Image Converter)</h1>
+      <p class="sub">PNG, JPG, JPEG, اور WEBP میں تیزی سے تبدیلی — وہی تھیم اور اینیمیشنز جیسی آپ کے امیج کمپریسر میں ہیں۔ مکمل رسپانسیو۔</p>
+    </section><div class="grid" style="margin-top:20px">
+  <!-- Left: Dropzone + File list -->
+  <div class="card">
+    <div class="drop" id="dropzone">
+      <div class="dash">
+        <div class="pulse"></div>
+        <div class="icon">📤</div>
+        <h3 style="margin: 6px 0 2px 0">فائلز ڈریگ کریں یا کلک کر کے منتخب کریں</h3>
+        <p class="sub">JPG, JPEG, PNG, WEBP, SVG (rasterized) سپورٹڈ</p>
+        <input id="file-input" type="file" accept="image/*,.svg" multiple>
+      </div>
+    </div>
+    <div class="list" id="file-list"></div>
+  </div>
+
+  <!-- Right: Controls -->
+  <div class="card controls">
+    <div class="row">
+      <div class="ctl">
+        <label>Output format (نتیجہ فارمیٹ)</label>
+        <select id="format">
+          <option value="png">PNG (.png)</option>
+          <option value="jpeg">JPG (.jpg)</option>
+          <option value="jpeg-ext">JPEG (.jpeg)</option>
+          <option value="webp">Picture (.webp)</option>
+          <option value="ai" disabled>AI (.ai) — براؤزر میں ممکن نہیں</option>
+        </select>
+        <div class="hint">نوٹ: براہِ راست AI ایکسپورٹ براؤزر میں ممکن نہیں۔ سرور سائیڈ درکار ہوتی ہے۔</div>
+      </div>
+      <div class="ctl">
+        <label>Quality (JPG/WEBP)</label>
+        <input id="quality" type="range" min="0.4" max="1" step="0.01" value="0.92">
+        <div class="hint" id="quality-label">92%</div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="ctl">
+        <label>Resize (optional)</label>
+        <div class="row">
+          <input id="w" type="number" placeholder="Width" min="1">
+          <input id="h" type="number" placeholder="Height" min="1">
+        </div>
+        <div class="hint"><input type="checkbox" id="keep-ar" checked> تناسب برقرار رکھیں</div>
+      </div>
+      <div class="ctl">
+        <label>JPEG/WEBP background for transparency</label>
+        <input id="bg" type="color" value="#000000">
+        <div class="hint">شفاف تصاویر کو JPG/WEBP میں بدلتے وقت یہ رنگ بھرا جائے گا۔</div>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn primary" id="convert"><span class="shine"></span>کنورٹ کریں</button>
+      <button class="btn" id="clear">کلیئر</button>
+    </div>
+    <p class="hint" style="margin-top:10px">تمام پروسیسنگ لوکل براؤزر میں ہوتی ہے — کوئی اپلوڈ نہیں۔</p>
+  </div>
+</div>
+
+<p class="footer">اگر آپ کو لازمی <strong>AI</strong> فائل چاہیے، تو یہ کلائنٹ-سائیڈ ممکن نہیں؛ سرور پر کنورژن لائبریریز (مثلاً <em>Illustrator/PDF toolchains</em>) درکار ہوں گی۔</p>
+
+  </div>  <script>
+    const d = document;
+    const drop = d.getElementById('dropzone');
+    const fileInput = d.getElementById('file-input');
+    const list = d.getElementById('file-list');
+    const formatSel = d.getElementById('format');
+    const qualityRange = d.getElementById('quality');
+    const qualityLabel = d.getElementById('quality-label');
+    const btnConvert = d.getElementById('convert');
+    const btnClear = d.getElementById('clear');
+    const widthInput = d.getElementById('w');
+    const heightInput = d.getElementById('h');
+    const keepAR = d.getElementById('keep-ar');
+    const bgPicker = d.getElementById('bg');
+
+    let items = []; // {file, url, img, canvas}
+
+    // Quality label update
+    qualityRange.addEventListener('input', () => qualityLabel.textContent = Math.round(parseFloat(qualityRange.value)*100) + '%');
+
+    // Dropzone interactions
+    ;['dragenter','dragover'].forEach(evt => drop.addEventListener(evt, e=>{e.preventDefault(); drop.querySelector('.dash').style.borderColor = 'var(--brand-2)'}));
+    ;['dragleave','drop'].forEach(evt => drop.addEventListener(evt, e=>{e.preventDefault(); drop.querySelector('.dash').style.borderColor = 'rgba(255,255,255,.24)'}));
+    drop.addEventListener('drop', e=>{
+      e.preventDefault();
+      const files = [...e.dataTransfer.files];
+      addFiles(files);
+    });
+    fileInput.addEventListener('change', e=> addFiles([...e.target.files]));
+
+    function addFiles(files){
+      const accept = ['image/', 'image/svg+xml'];
+      files.forEach(f=>{
+        if(!accept.some(a=> f.type.startsWith(a) || (a==='image/svg+xml' && f.type==='image/svg+xml'))){
+          toast(`Unsupported: ${f.name}`);
+          return;
+        }
+        const url = URL.createObjectURL(f);
+        items.push({file:f, url, img:null});
+      });
+      renderList();
+    }
+
+    function renderList(){
+      list.innerHTML = '';
+      items.forEach((it, idx)=>{
+        const row = d.createElement('div');
+        row.className = 'item';
+        row.dataset.idx = idx;
+
+        const thumb = d.createElement('div'); thumb.className='thumb';
+        const im = d.createElement('img'); im.src = it.url; thumb.appendChild(im);
+
+        const mid = d.createElement('div');
+        const name = d.createElement('div'); name.className='name'; name.textContent = it.file.name;
+        const meta = d.createElement('div'); meta.className='meta'; meta.textContent = humanFile(it.file.size);
+        mid.appendChild(name); mid.appendChild(meta);
+
+        const right = d.createElement('div'); right.className='status';
+        right.innerHTML = '<span class="badge">Queued</span>';
+
+        row.appendChild(thumb); row.appendChild(mid); row.appendChild(right);
+        list.appendChild(row);
+      });
+    }
+
+    function updateStatus(idx, html){
+      const row = list.querySelector(`.item[data-idx="${idx}"] .status`);
+      if(row) row.innerHTML = html;
+    }
+
+    function humanFile(n){
+      const u=['B','KB','MB','GB']; let i=0; while(n>1024 && i<u.length-1){n/=1024;i++} return `${n.toFixed( (i?1:0) )} ${u[i]}`
+    }
+
+    async function fileToImageBitmap(file){
+      if(file.type === 'image/svg+xml'){
+        // Rasterize SVG at intrinsic or target size
+        const svgText = await file.text();
+        const blob = new Blob([svgText], {type:'image/svg+xml'});
+        const url = URL.createObjectURL(blob);
+        const img = new Image();
+        img.decoding = 'sync';
+        img.src = url;
+        await img.decode();
+        return await createImageBitmap(img);
+      }
+      const buff = await file.arrayBuffer();
+      try{
+        return await createImageBitmap(new Blob([buff], {type:file.type}));
+      }catch(e){
+        // Fallback via HTMLImageElement
+        const url = URL.createObjectURL(new Blob([buff], {type:file.type}));
+        const img = new Image(); img.crossOrigin='anonymous'; img.src=url; await img.decode();
+        return await createImageBitmap(img);
+      }
+    }
+
+    function drawToCanvas(bitmap, targetW, targetH, bg){
+      const cnv = d.createElement('canvas');
+      cnv.width = targetW; cnv.height = targetH;
+      const ctx = cnv.getContext('2d');
+      if(bg){ ctx.fillStyle = bg; ctx.fillRect(0,0,cnv.width,cnv.height); }
+      ctx.drawImage(bitmap, 0,0, targetW, targetH);
+      return cnv;
+    }
+
+    btnConvert.addEventListener('click', async ()=>{
+      if(items.length===0){ toast('پہلے تصاویر منتخب کریں'); return; }
+      const fmt = formatSel.value;
+      if(fmt==='ai'){ toast('AI ایکسپورٹ براہِ راست ممکن نہیں'); return; }
+
+      // Iterate and convert
+      for(let i=0;i<items.length;i++){
+        const it = items[i];
+        updateStatus(i, '<span class="spin"></span>');
+        try{
+          const bmp = await fileToImageBitmap(it.file);
+          let tw = bmp.width, th = bmp.height;
+          const W = parseInt(widthInput.value||0,10);
+          const H = parseInt(heightInput.value||0,10);
+          if(W && !H){ tw = W; th = Math.round( (bmp.height/bmp.width) * W ); }
+          if(H && !W){ th = H; tw = Math.round( (bmp.width/bmp.height) * H ); }
+          if(W && H){
+            if(keepAR.checked){
+              const ar = bmp.width/bmp.height;
+              if(W/H > ar){ th = H; tw = Math.round(H*ar); } else { tw = W; th = Math.round(W/ar); }
+            } else { tw=W; th=H; }
+          }
+          const needBG = (fmt==='jpeg' || fmt==='jpeg-ext' || fmt==='webp');
+          const cnv = drawToCanvas(bmp, tw, th, needBG ? bgPicker.value : null);
+
+          let mime = 'image/png', ext = 'png';
+          if(fmt==='jpeg'){ mime='image/jpeg'; ext='jpg'; }
+          if(fmt==='jpeg-ext'){ mime='image/jpeg'; ext='jpeg'; }
+          if(fmt==='webp'){ mime='image/webp'; ext='webp'; }
+
+          const q = parseFloat(qualityRange.value);
+          const blob = await new Promise(res=> cnv.toBlob(res, mime, (mime==='image/png')?undefined:q));
+          const a = d.createElement('a');
+          const base = it.file.name.replace(/\.[^.]+$/, '');
+          a.download = `${base}.${ext}`;
+          a.href = URL.createObjectURL(blob);
+
+          // Replace status with a download button
+          updateStatus(i, `<span class="ok">Ready</span><br><a class="badge link" href="${a.href}" download="${a.download}">Download</a>`);
+        }catch(err){
+          console.error(err);
+          updateStatus(i, `<span class="err">Error</span>`);
+        }
+      }
+    });
+
+    btnClear.addEventListener('click', ()=>{
+      items.forEach(it=> URL.revokeObjectURL(it.url));
+      items = []; list.innerHTML=''; fileInput.value='';
+    });
+
+    function toast(msg){
+      const t = d.createElement('div');
+      t.textContent = msg; t.style.position='fixed'; t.style.bottom='18px'; t.style.right='18px';
+      t.style.padding='10px 14px'; t.style.background='rgba(0,0,0,.7)'; t.style.color='white';
+      t.style.borderRadius='12px'; t.style.boxShadow='var(--shadow)'; t.style.zIndex=9999;
+      d.body.appendChild(t); setTimeout(()=>{t.style.transition='opacity .4s'; t.style.opacity='0'; setTimeout(()=>t.remove(), 400)}, 1600);
+    }
+  </script></body>
+  </html>
