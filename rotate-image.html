@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rotate Image Online — DaTools</title>
+  <meta name="description" content="Rotate your images online easily with DaTools. Upload, rotate left, right, or 180° instantly and download in high quality. 100% free & secure.">
+  <meta name="keywords" content="rotate image online, flip image, rotate left, rotate right, rotate 180, DaTools image tools">
+  <style>
+    :root{
+      --bg: #f8fbff;
+      --card: #ffffff;
+      --card-2: #f0f7ff;
+      --text: #1d3557;
+      --muted: #6c7a91;
+      --brand: #009dff;    
+      --brand-2: #00c9ff;  
+      --ok: #18c964;
+      --err: #ff4d6d;
+      --radius: 18px;
+      --shadow: 0 6px 20px rgba(0,0,0,0.08);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family: system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    header{
+      background: linear-gradient(90deg,var(--brand),var(--brand-2));
+      padding:16px; text-align:center; color:white; font-size:20px; font-weight:700;
+    }
+    .container{max-width:1100px; margin:30px auto; padding:0 16px}
+
+    .hero{
+      background: linear-gradient(135deg,#e0f2ff,#f8fbff);
+      padding:30px; border-radius:var(--radius); box-shadow:var(--shadow); text-align:center;
+    }
+    .hero h1{margin:0; font-size:28px}
+    .hero p{margin:8px 0 0; color:var(--muted)}
+
+    .card{
+      background:var(--card); border-radius:var(--radius);
+      box-shadow:var(--shadow); padding:20px; margin-top:20px;
+    }
+
+    .drop{
+      border:2px dashed var(--brand); border-radius:var(--radius);
+      padding:40px; text-align:center; cursor:pointer; transition:.3s;
+    }
+    .drop:hover{background:#eef8ff}
+    .drop input{display:none}
+    .actions{margin-top:20px; display:flex; gap:10px; flex-wrap:wrap; justify-content:center}
+    button{
+      padding:10px 20px; border:none; border-radius:var(--radius);
+      font-weight:600; cursor:pointer; transition:.3s;
+    }
+    .primary{
+      background:linear-gradient(90deg,var(--brand),var(--brand-2)); color:white;
+      box-shadow:0 4px 15px rgba(0,157,255,0.4); position:relative; overflow:hidden;
+    }
+    .primary:hover{transform:scale(1.05)}
+    .primary::after{
+      content:""; position:absolute; top:-50%; left:-30%; width:50%; height:200%;
+      background:linear-gradient(90deg,transparent,rgba(255,255,255,.7),transparent);
+      transform:rotate(25deg); animation:shine 3s linear infinite;
+    }
+    @keyframes shine{to{left:130%}}
+    .secondary{background:#e7f4ff; color:var(--brand)}
+    .secondary:hover{background:#d6eeff}
+
+    .preview{margin-top:20px; text-align:center}
+    canvas{max-width:100%; border-radius:var(--radius); box-shadow:var(--shadow)}
+
+    .steps,.features{display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:16px; margin-top:30px}
+    .step,.feature{background:var(--card-2); padding:20px; border-radius:var(--radius); text-align:center; box-shadow:var(--shadow)}
+    .step h3,.feature h3{margin:0 0 10px}
+    .muted{color:var(--muted); font-size:14px}
+
+    footer{margin-top:40px; padding:20px; text-align:center; font-size:14px; color:var(--muted)}
+  </style>
+</head>
+<body>
+  <header>DaTools — Rotate Image Online</header>
+  <div class="container">
+    <section class="hero">
+      <h1>Rotate Image Instantly</h1>
+      <p>Upload your image and rotate left, right, or 180° with one click. 100% free & secure!</p>
+    </section>
+
+    <div class="card">
+      <div class="drop" id="dropzone">
+        <p>📤 Drag & Drop image or Click to select</p>
+        <input type="file" id="file-input" accept="image/*">
+      </div>
+      <div class="actions">
+        <button class="primary" id="rotateLeft">↩️ Rotate Left 90°</button>
+        <button class="primary" id="rotateRight">↪️ Rotate Right 90°</button>
+        <button class="primary" id="rotate180">🔄 Rotate 180°</button>
+        <button class="secondary" id="download">⬇️ Download</button>
+        <button class="secondary" id="clear">Clear</button>
+      </div>
+      <div class="preview" id="preview"></div>
+    </div>
+
+    <div class="steps">
+      <div class="step"><h3>1. Upload</h3><p class="muted">Choose any image (JPG, PNG, WEBP).</p></div>
+      <div class="step"><h3>2. Rotate</h3><p class="muted">Use the buttons to rotate left, right, or 180°.</p></div>
+      <div class="step"><h3>3. Download</h3><p class="muted">Save your rotated image instantly.</p></div>
+    </div>
+
+    <div class="features">
+      <div class="feature"><h3>🎨 Multiple Formats</h3><p class="muted">Supports JPG, JPEG, PNG, WEBP.</p></div>
+      <div class="feature"><h3>⚡ Super Fast</h3><p class="muted">Rotation happens instantly in your browser.</p></div>
+      <div class="feature"><h3>🔒 Secure</h3><p class="muted">No upload needed — everything is done locally.</p></div>
+    </div>
+
+    <footer>
+      Made with ❤️ for creators | Contact: <a href="mailto:toolplus9@gmail.com">toolplus9@gmail.com</a><br>
+      Credit: Syed Afnan SAV
+    </footer>
+  </div>
+
+  <script>
+    const drop = document.getElementById('dropzone');
+    const fileInput = document.getElementById('file-input');
+    const preview = document.getElementById('preview');
+    const btnRotateLeft = document.getElementById('rotateLeft');
+    const btnRotateRight = document.getElementById('rotateRight');
+    const btnRotate180 = document.getElementById('rotate180');
+    const btnDownload = document.getElementById('download');
+    const btnClear = document.getElementById('clear');
+
+    let selectedFile = null;
+    let rotation = 0;
+    let imgElement = null;
+    let canvas = document.createElement('canvas');
+    let ctx = canvas.getContext('2d');
+
+    drop.addEventListener('click',()=> fileInput.click());
+    drop.addEventListener('dragover',(e)=>{e.preventDefault(); drop.style.background='#d6eeff'});
+    drop.addEventListener('dragleave',()=>{drop.style.background='transparent'});
+    drop.addEventListener('drop',(e)=>{
+      e.preventDefault(); drop.style.background='transparent';
+      if(e.dataTransfer.files.length>0){
+        selectedFile = e.dataTransfer.files[0];
+        showPreview(selectedFile);
+      }
+    });
+    fileInput.addEventListener('change',(e)=>{
+      if(e.target.files.length>0){
+        selectedFile = e.target.files[0];
+        showPreview(selectedFile);
+      }
+    });
+
+    function showPreview(file){
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = ()=>{
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        ctx.drawImage(img,0,0);
+        preview.innerHTML = "";
+        preview.appendChild(canvas);
+        rotation = 0;
+      }
+      img.src = url;
+      imgElement = img;
+    }
+
+    function applyRotation(){
+      if(!imgElement) return;
+      if(rotation % 180 === 0){
+        canvas.width = imgElement.width;
+        canvas.height = imgElement.height;
+      } else {
+        canvas.width = imgElement.height;
+        canvas.height = imgElement.width;
+      }
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      ctx.save();
+      ctx.translate(canvas.width/2, canvas.height/2);
+      ctx.rotate(rotation * Math.PI / 180);
+      ctx.drawImage(imgElement, -imgElement.width/2, -imgElement.height/2);
+      ctx.restore();
+    }
+
+    btnRotateLeft.addEventListener('click',()=>{
+      if(!imgElement) return alert("Please upload an image first");
+      rotation -= 90;
+      applyRotation();
+    });
+
+    btnRotateRight.addEventListener('click',()=>{
+      if(!imgElement) return alert("Please upload an image first");
+      rotation += 90;
+      applyRotation();
+    });
+
+    btnRotate180.addEventListener('click',()=>{
+      if(!imgElement) return alert("Please upload an image first");
+      rotation += 180;
+      applyRotation();
+    });
+
+    btnDownload.addEventListener('click',()=>{
+      if(!imgElement) return alert("Please upload an image first");
+      const link = document.createElement('a');
+      link.download = "rotated-image.png";
+      link.href = canvas.toDataURL();
+      link.click();
+    });
+
+    btnClear.addEventListener('click',()=>{
+      selectedFile = null;
+      fileInput.value="";
+      preview.innerHTML="";
+      rotation = 0;
+      imgElement = null;
+    });
+  </script>
+</body>
+</html>
