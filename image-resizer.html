@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Resizer — DaTools</title>
+  <style>
+    :root {
+      --bg: #f8fbff;
+      --card: #ffffff;
+      --brand: #009dff;
+      --brand-2: #00c9ff;
+      --text: #1d3557;
+      --muted: #6c7a91;
+      --err: #ff4d6d;
+      --radius: 18px;
+      --shadow: 0 6px 20px rgba(0,0,0,0.1);
+    }
+    * {box-sizing:border-box;font-family:Segoe UI,Arial,sans-serif}
+    body {margin:0;background:var(--bg);color:var(--text);}
+    .container {max-width:900px;margin:40px auto;padding:20px;}
+    h1 {text-align:center;font-size:32px;margin-bottom:10px;animation:fadeIn 1s ease;}
+    p.sub {text-align:center;color:var(--muted);margin-bottom:30px;animation:fadeIn 1.2s ease;}
+    .card {background:var(--card);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);animation:floaty 6s infinite ease-in-out;}
+    .dropzone {border:2px dashed #b9ddff;border-radius:var(--radius);padding:40px;text-align:center;cursor:pointer;transition:.3s;}
+    .dropzone:hover {background:#eaf6ff;transform:scale(1.02);}
+    .dropzone input {display:none;}
+    .btn {
+      display:inline-block;padding:12px 20px;margin:10px;
+      border:none;border-radius:12px;
+      background:linear-gradient(90deg,var(--brand),var(--brand-2));
+      color:#fff;font-weight:600;cursor:pointer;
+      position:relative;overflow:hidden;
+      transition:transform .2s;
+    }
+    .btn:hover {transform:scale(1.05);}
+    .btn::after {
+      content:"";position:absolute;top:0;left:-100%;
+      width:100%;height:100%;
+      background:rgba(255,255,255,0.3);
+      transform:skewX(-20deg);
+      transition:all .5s;
+    }
+    .btn:hover::after {left:100%;}
+    .preview {margin-top:20px;text-align:center;}
+    .preview img {max-width:100%;border-radius:12px;box-shadow:var(--shadow);animation:fadeInUp .8s ease;}
+    .inputs {display:flex;justify-content:center;gap:15px;margin-top:20px;flex-wrap:wrap;}
+    .inputs input {
+      width:110px;padding:10px;border:2px solid #b9ddff;
+      border-radius:10px;text-align:center;font-size:16px;
+      transition:.3s;
+    }
+    .inputs input:focus {border-color:var(--brand);outline:none;}
+    .quick-sizes {text-align:center;margin-top:15px;}
+    .quick-sizes button {margin:5px;}
+    /* Animations */
+    @keyframes fadeIn {from{opacity:0;transform:translateY(-10px);}to{opacity:1;transform:none;}}
+    @keyframes fadeInUp {from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:none;}}
+    @keyframes floaty {0%{transform:translateY(0);}50%{transform:translateY(-8px);}100%{transform:translateY(0);}}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Image Resizer</h1>
+    <p class="sub">Resize your images instantly — powered by DaTools</p>
+    
+    <div class="card">
+      <label class="dropzone">
+        <p>📂 Drag & Drop or Click to Upload Image</p>
+        <input type="file" id="file-input" accept="image/*">
+      </label>
+
+      <div class="quick-sizes">
+        <p>Select a quick size:</p>
+        <button class="btn size-btn" data-w="640" data-h="480">📱 Small (640×480)</button>
+        <button class="btn size-btn" data-w="1280" data-h="720">💻 HD (1280×720)</button>
+        <button class="btn size-btn" data-w="1920" data-h="1080">🖥 Full HD (1920×1080)</button>
+        <button class="btn size-btn" data-w="1080" data-h="1080">📸 Instagram (1080×1080)</button>
+        <button class="btn size-btn" data-w="320" data-h="180">🖼 Thumbnail (320×180)</button>
+      </div>
+
+      <div class="inputs">
+        <input type="number" id="width" placeholder="Custom Width">
+        <input type="number" id="height" placeholder="Custom Height">
+      </div>
+
+      <button class="btn" id="resize-btn">✨ Resize Image</button>
+
+      <div class="preview" id="preview"></div>
+    </div>
+  </div>
+
+<script>
+const fileInput = document.getElementById("file-input");
+const resizeBtn = document.getElementById("resize-btn");
+const preview = document.getElementById("preview");
+const sizeButtons = document.querySelectorAll(".size-btn");
+let file = null;
+let chosenWidth = null, chosenHeight = null;
+
+fileInput.addEventListener("change", e=>{
+  file = e.target.files[0];
+  if(file){
+    preview.innerHTML = `<p>Uploaded: ${file.name}</p>`;
+  }
+});
+
+sizeButtons.forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    chosenWidth = btn.dataset.w;
+    chosenHeight = btn.dataset.h;
+    document.getElementById("width").value = chosenWidth;
+    document.getElementById("height").value = chosenHeight;
+  });
+});
+
+resizeBtn.addEventListener("click", ()=>{
+  if(!file){alert("Please upload an image first.");return;}
+  
+  const width = document.getElementById("width").value;
+  const height = document.getElementById("height").value;
+  if(!width || !height){alert("Please select a size or enter custom dimensions.");return;}
+
+  const reader = new FileReader();
+  reader.onload = e=>{
+    const img = new Image();
+    img.onload = ()=>{
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0, width, height);
+      const url = canvas.toDataURL("image/png");
+
+      preview.innerHTML = `
+        <h3>Result:</h3>
+        <img src="${url}" alt="Resized Image">
+        <br><br>
+        <a href="${url}" download="resized.png" class="btn">⬇ Download</a>
+      `;
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+});
+</script>
+</body>
+</html>
