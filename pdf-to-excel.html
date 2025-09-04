@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Coming Soon — DaTools</title>
+  <style>
+    :root{
+      --bg: #f8fbff;
+      --card: #ffffff;
+      --card-2: #f0f7ff;
+      --text: #1d3557;
+      --muted: #6c7a91;
+      --brand: #009dff;    
+      --brand-2: #00c9ff;  
+      --radius: 18px;
+      --shadow: 0 6px 20px rgba(0,0,0,0.08);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family: system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    header{
+      background: linear-gradient(90deg,var(--brand),var(--brand-2));
+      padding:16px; text-align:center; color:white; font-size:20px; font-weight:700;
+    }
+    .container{max-width:800px; margin:50px auto; padding:0 16px; text-align:center}
+
+    .card{
+      background:var(--card);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:40px 20px;
+      margin-top:40px;
+      animation: fadeIn 1s ease;
+    }
+
+    h1{
+      font-size:32px;
+      margin:0;
+      background:linear-gradient(90deg,var(--brand),var(--brand-2));
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+    }
+    p{color:var(--muted); font-size:16px; margin-top:12px}
+
+    .pulse{
+      font-size:60px;
+      animation:pulse 1.5s infinite;
+    }
+
+    @keyframes pulse{
+      0%{transform:scale(1); opacity:.8}
+      50%{transform:scale(1.2); opacity:1}
+      100%{transform:scale(1); opacity:.8}
+    }
+
+    @keyframes fadeIn{from{opacity:0; transform:translateY(20px)} to{opacity:1; transform:translateY(0)}}
+
+    footer{margin-top:40px; padding:20px; text-align:center; font-size:14px; color:var(--muted)}
+  </style>
+</head>
+<body>
+  <header>DaTools</header>
+
+  <div class="container">
+    <div class="card">
+      <div class="pulse">🚀</div>
+      <h1>Coming Soon</h1>
+      <p>We’re working hard to bring you something amazing.<br>
+         Stay tuned for updates!</p>
+    </div>
+  </div>
+
+  <footer>
+    Made with ❤️ for creators | Contact: <a href="mailto:toolplus9@gmail.com">toolplus9@gmail.com</a><br>
+    Credit: Syed Afnan SAV
+  </footer>
+</body>
+</html>
