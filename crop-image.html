@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crop Image Online — Free Photo Crop Tool | DaTools</title>
+  <meta name="description" content="Crop image online for free with DaTools. Adjust, resize, and crop your photos easily just like in your phone gallery. Fast, secure, and no signup required.">
+  <style>
+    :root{
+      --bg: #f8fbff;
+      --card: #ffffff;
+      --card-2: #f0f7ff;
+      --text: #1d3557;
+      --muted: #6c7a91;
+      --brand: #009dff;    
+      --brand-2: #00c9ff;  
+      --ok: #18c964;
+      --err: #ff4d6d;
+      --radius: 18px;
+      --shadow: 0 6px 20px rgba(0,0,0,0.08);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family: system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height:1.6;
+    }
+    header{
+      background: linear-gradient(90deg,var(--brand),var(--brand-2));
+      padding:16px; text-align:center; color:white; font-size:20px; font-weight:700;
+    }
+    .container{max-width:1100px; margin:30px auto; padding:0 16px}
+
+    .hero{
+      background: linear-gradient(135deg,#e0f2ff,#f8fbff);
+      padding:30px; border-radius:var(--radius); box-shadow:var(--shadow); text-align:center;
+    }
+    .hero h1{margin:0; font-size:28px}
+    .hero p{margin:8px 0 0; color:var(--muted)}
+
+    .card{
+      background:var(--card); border-radius:var(--radius);
+      box-shadow:var(--shadow); padding:20px; margin-top:20px;
+    }
+
+    .drop{
+      border:2px dashed var(--brand); border-radius:var(--radius);
+      padding:40px; text-align:center; cursor:pointer; transition:.3s;
+    }
+    .drop:hover{background:#eef8ff}
+    .drop input{display:none}
+    .actions{margin-top:20px; display:flex; gap:10px; justify-content:center; flex-wrap:wrap}
+    button{
+      padding:10px 20px; border:none; border-radius:var(--radius);
+      font-weight:600; cursor:pointer; transition:.3s;
+    }
+    .primary{
+      background:linear-gradient(90deg,var(--brand),var(--brand-2)); color:white;
+      box-shadow:0 4px 15px rgba(0,157,255,0.4); position:relative; overflow:hidden;
+    }
+    .primary:hover{transform:scale(1.05)}
+    .primary::after{
+      content:""; position:absolute; top:-50%; left:-30%; width:50%; height:200%;
+      background:linear-gradient(90deg,transparent,rgba(255,255,255,.7),transparent);
+      transform:rotate(25deg); animation:shine 3s linear infinite;
+    }
+    @keyframes shine{to{left:130%}}
+    .secondary{background:#e7f4ff; color:var(--brand)}
+    .secondary:hover{background:#d6eeff}
+
+    .preview{margin-top:20px; text-align:center}
+    .preview img{max-width:100%; border-radius:var(--radius); box-shadow:var(--shadow)}
+
+    .steps,.features{display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:16px; margin-top:30px}
+    .step,.feature{background:var(--card-2); padding:20px; border-radius:var(--radius); text-align:center; box-shadow:var(--shadow)}
+    .step h3,.feature h3{margin:0 0 10px}
+    .muted{color:var(--muted); font-size:14px}
+
+    footer{margin-top:40px; padding:20px; text-align:center; font-size:14px; color:var(--muted)}
+
+    /* Cropper.js container */
+    #image{max-width:100%}
+  </style>
+
+  <!-- Cropper.js CSS -->
+  <link  href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet"/>
+</head>
+<body>
+  <header>DaTools — Crop Image Online</header>
+  <div class="container">
+    <section class="hero">
+      <h1>Crop Image Online — Free & Easy</h1>
+      <p>Crop and adjust your photos instantly. Works just like your phone gallery crop tool.</p>
+    </section>
+
+    <div class="card">
+      <div class="drop" id="dropzone">
+        <p>📤 Drag & Drop image or Click to select</p>
+        <input type="file" id="file-input" accept="image/*">
+      </div>
+      <div class="actions">
+        <button class="primary" id="crop">✂️ Crop Image</button>
+        <button class="secondary" id="clear">Clear</button>
+      </div>
+      <div class="preview" id="preview"></div>
+    </div>
+
+    <div class="steps">
+      <div class="step"><h3>1. Upload</h3><p class="muted">Select any photo (JPG, PNG, WEBP).</p></div>
+      <div class="step"><h3>2. Adjust</h3><p class="muted">Drag, zoom, or resize your crop area freely.</p></div>
+      <div class="step"><h3>3. Download</h3><p class="muted">Save the cropped image instantly.</p></div>
+    </div>
+
+    <div class="features">
+      <div class="feature"><h3>🎨 Free-Style Crop</h3><p class="muted">Crop exactly the way you want, no limits.</p></div>
+      <div class="feature"><h3>⚡ Instant Processing</h3><p class="muted">Runs directly in your browser, super fast.</p></div>
+      <div class="feature"><h3>🔒 100% Secure</h3><p class="muted">No upload to server, your image stays private.</p></div>
+    </div>
+
+    <div class="card" style="margin-top:30px">
+      <h2>📘 How to Use Crop Image Tool</h2>
+      <ol>
+        <li>Click on the upload area or drag & drop your photo.</li>
+        <li>Adjust the crop box by dragging, zooming, or resizing freely.</li>
+        <li>Click <strong>“✂️ Crop Image”</strong> to generate your cropped photo.</li>
+        <li>Download the cropped photo with one click.</li>
+      </ol>
+      <p class="muted">Tip: Use this tool for profile pictures, thumbnails, Instagram posts, or any quick cropping need.</p>
+    </div>
+
+    <footer>
+      Made with ❤️ for creators | Contact: <a href="mailto:toolplus9@gmail.com">toolplus9@gmail.com</a><br>
+      Credit: Syed Afnan SAV
+    </footer>
+  </div>
+
+  <!-- Cropper.js Script -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+  <script>
+    const drop = document.getElementById('dropzone');
+    const fileInput = document.getElementById('file-input');
+    const btnCrop = document.getElementById('crop');
+    const btnClear = document.getElementById('clear');
+    const preview = document.getElementById('preview');
+
+    let cropper = null;
+    let uploadedImage = null;
+
+    drop.addEventListener('click',()=> fileInput.click());
+    drop.addEventListener('dragover',(e)=>{e.preventDefault(); drop.style.background='#d6eeff'});
+    drop.addEventListener('dragleave',()=> drop.style.background='transparent');
+    drop.addEventListener('drop',(e)=>{
+      e.preventDefault(); drop.style.background='transparent';
+      if(e.dataTransfer.files.length>0){
+        handleFile(e.dataTransfer.files[0]);
+      }
+    });
+
+    fileInput.addEventListener('change',(e)=>{
+      if(e.target.files.length>0){
+        handleFile(e.target.files[0]);
+      }
+    });
+
+    function handleFile(file){
+      const url = URL.createObjectURL(file);
+      preview.innerHTML = `<img id="image" src="${url}" alt="Image to crop">`;
+      uploadedImage = file;
+      const image = document.getElementById('image');
+      if(cropper){cropper.destroy();}
+      cropper = new Cropper(image,{
+        viewMode:1,
+        autoCropArea:0.8,
+        movable:true,
+        zoomable:true,
+        rotatable:false,
+        scalable:false
+      });
+    }
+
+    btnCrop.addEventListener('click',()=>{
+      if(!cropper){alert("Please upload an image first"); return;}
+      const canvas = cropper.getCroppedCanvas();
+      if(canvas){
+        const croppedUrl = canvas.toDataURL("image/png");
+        preview.innerHTML = `
+          <p><strong>Cropped Result:</strong></p>
+          <img src="${croppedUrl}" alt="Cropped Image">
+          <div style="margin-top:10px">
+            <a href="${croppedUrl}" download="cropped.png">
+              <button class="primary">⬇️ Download</button>
+            </a>
+          </div>`;
+        cropper.destroy();
+        cropper=null;
+      }
+    });
+
+    btnClear.addEventListener('click',()=>{
+      preview.innerHTML="";
+      if(cropper){cropper.destroy(); cropper=null;}
+      fileInput.value="";
+    });
+  </script>
+</body>
+</html>
