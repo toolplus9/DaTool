@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image to Base64 Converter — DaTools</title>
+  <meta name="description" content="Convert images to Base64 online for free with DaTools. Upload JPG, PNG, GIF, or WebP and get instant Base64 string with copy & download options.">
+  <meta name="keywords" content="image to base64, convert image to text, base64 online, base64 converter, DaTools">
+  <style>
+    :root{
+      --bg:#f8fbff;--card:#ffffff;--card-2:#f0f7ff;
+      --text:#1d3557;--muted:#6c7a91;
+      --brand:#009dff;--brand-2:#00c9ff;
+      --radius:18px;--shadow:0 6px 20px rgba(0,0,0,0.08);
+    }
+    body{margin:0;font-family:system-ui,sans-serif;background:var(--bg);color:var(--text);}
+    header{background:linear-gradient(90deg,var(--brand),var(--brand-2));padding:16px;text-align:center;color:white;font-size:20px;font-weight:700;}
+    .container{max-width:1100px;margin:30px auto;padding:0 16px}
+    .hero{background:linear-gradient(135deg,#e0f2ff,#f8fbff);padding:30px;border-radius:var(--radius);box-shadow:var(--shadow);text-align:center}
+    .hero h1{margin:0;font-size:28px}
+    .hero p{margin:8px 0 0;color:var(--muted)}
+    .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px;margin-top:20px}
+    .drop{border:2px dashed var(--brand);border-radius:var(--radius);padding:40px;text-align:center;cursor:pointer;transition:.3s}
+    .drop:hover{background:#eef8ff}
+    .drop input{display:none}
+    .actions{margin-top:20px;display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+    button{padding:10px 20px;border:none;border-radius:var(--radius);font-weight:600;cursor:pointer;transition:.3s}
+    .primary{background:linear-gradient(90deg,var(--brand),var(--brand-2));color:white;box-shadow:0 4px 15px rgba(0,157,255,0.4);position:relative;overflow:hidden}
+    .primary:hover{transform:scale(1.05)}
+    .secondary{background:#e7f4ff;color:var(--brand)}
+    .secondary:hover{background:#d6eeff}
+    .preview{margin-top:20px;text-align:center}
+    .preview img{max-width:100%;border-radius:var(--radius);box-shadow:var(--shadow)}
+    textarea{width:100%;height:200px;margin-top:20px;padding:10px;border-radius:var(--radius);border:1px solid #ddd;font-family:monospace;resize:vertical}
+    .steps,.features{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px;margin-top:30px}
+    .step,.feature{background:var(--card-2);padding:20px;border-radius:var(--radius);text-align:center;box-shadow:var(--shadow)}
+    .step h3,.feature h3{margin:0 0 10px}
+    .muted{color:var(--muted);font-size:14px}
+    footer{margin-top:40px;padding:20px;text-align:center;font-size:14px;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <header>DaTools — Image to Base64 Converter</header>
+  <div class="container">
+    <section class="hero">
+      <h1>Convert Image to Base64 Instantly</h1>
+      <p>Upload your image and get Base64 string instantly. Copy or download easily.</p>
+    </section>
+
+    <div class="card">
+      <div class="drop" id="dropzone">
+        <p>📤 Drag & Drop image or Click to select</p>
+        <input type="file" id="file-input" accept="image/*">
+      </div>
+      <div class="actions">
+        <button class="primary" id="convert">⚡ Convert to Base64</button>
+        <button class="secondary" id="copy">📋 Copy</button>
+        <button class="secondary" id="download">⬇️ Download .txt</button>
+        <button class="secondary" id="clear">Clear</button>
+      </div>
+      <div class="preview" id="preview"></div>
+      <textarea id="output" placeholder="Your Base64 code will appear here..." readonly></textarea>
+    </div>
+
+    <div class="steps">
+      <div class="step"><h3>1. Upload</h3><p class="muted">Choose any image (JPG, PNG, WEBP, GIF).</p></div>
+      <div class="step"><h3>2. Convert</h3><p class="muted">Get instant Base64 text string.</p></div>
+      <div class="step"><h3>3. Copy / Download</h3><p class="muted">Use Base64 anywhere or save as .txt file.</p></div>
+    </div>
+
+    <div class="features">
+      <div class="feature"><h3>🎨 Multiple Formats</h3><p class="muted">Supports JPG, JPEG, PNG, GIF, WEBP.</p></div>
+      <div class="feature"><h3>⚡ Instant Conversion</h3><p class="muted">Fast in-browser conversion, no upload required.</p></div>
+      <div class="feature"><h3>🔒 Secure</h3><p class="muted">All processing happens locally, no data stored.</p></div>
+    </div>
+
+    <footer>
+      Made with ❤️ for creators | Contact: <a href="mailto:toolplus9@gmail.com">toolplus9@gmail.com</a><br>
+      Credit: Syed Afnan SAV
+    </footer>
+  </div>
+
+  <script>
+    const drop = document.getElementById('dropzone');
+    const fileInput = document.getElementById('file-input');
+    const btnConvert = document.getElementById('convert');
+    const btnCopy = document.getElementById('copy');
+    const btnDownload = document.getElementById('download');
+    const btnClear = document.getElementById('clear');
+    const preview = document.getElementById('preview');
+    const output = document.getElementById('output');
+
+    let selectedFile = null;
+
+    drop.addEventListener('click',()=> fileInput.click());
+    drop.addEventListener('dragover',(e)=>{e.preventDefault(); drop.style.background='#d6eeff'});
+    drop.addEventListener('dragleave',()=> drop.style.background='transparent');
+    drop.addEventListener('drop',(e)=>{
+      e.preventDefault(); drop.style.background='transparent';
+      if(e.dataTransfer.files.length>0){
+        selectedFile = e.dataTransfer.files[0];
+        showPreview(selectedFile);
+      }
+    });
+    fileInput.addEventListener('change',(e)=>{
+      if(e.target.files.length>0){
+        selectedFile = e.target.files[0];
+        showPreview(selectedFile);
+      }
+    });
+
+    function showPreview(file){
+      const url = URL.createObjectURL(file);
+      preview.innerHTML = `<p><strong>Preview:</strong></p><img src="${url}" alt="preview">`;
+    }
+
+    btnConvert.addEventListener('click',()=>{
+      if(!selectedFile){alert("Please upload an image first");return;}
+      const reader = new FileReader();
+      reader.onload = ()=>{ output.value = reader.result; };
+      reader.readAsDataURL(selectedFile);
+    });
+
+    btnCopy.addEventListener('click',()=>{
+      if(output.value.trim() === ""){alert("No Base64 code to copy");return;}
+      output.select(); document.execCommand("copy");
+      alert("Copied to clipboard ✅");
+    });
+
+    btnDownload.addEventListener('click',()=>{
+      if(output.value.trim() === ""){alert("No Base64 code to download");return;}
+      const blob = new Blob([output.value],{type:"text/plain"});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url; a.download = "base64.txt"; a.click();
+    });
+
+    btnClear.addEventListener('click',()=>{
+      selectedFile = null;
+      fileInput.value="";
+      preview.innerHTML="";
+      output.value="";
+    });
+  </script>
+</body>
+</html>
