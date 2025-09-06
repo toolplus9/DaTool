@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Random Color Generator — DaTools</title>
+<meta name="description" content="Generate random colors and palettes. Copy HEX/RGB, lock colors, export palette as PNG/JSON. DaTools theme." />
+<style>
+:root{--sky-50:#eaf6ff;--sky-300:#7fd0ff;--sky-500:#2aa7e0;--dark:#0b2030;--muted:#6b7b86;--card:rgba(255,255,255,0.96);--card-shadow:0 10px 30px rgba(10,35,60,0.06);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(180deg,var(--sky-50),#fff 35%);color:var(--dark);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:28px}
+.container{width:1100px;max-width:100%}
+header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.brand{display:flex;gap:12px;align-items:center}
+.logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--sky-300),var(--sky-500));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:18px;box-shadow:0 12px 30px rgba(42,167,224,0.16);animation:floaty 6s ease-in-out infinite}
+h1{margin:0;font-size:18px}
+.lead{margin:0;color:var(--muted);font-size:13px}
+.card{background:var(--card);padding:16px;border-radius:12px;box-shadow:var(--card-shadow)}
+main.grid{display:grid;grid-template-columns:1fr 420px;gap:18px}
+.controls{display:flex;flex-direction:column;gap:12px}
+label{font-size:13px;color:var(--muted)}
+.row{display:flex;gap:8px;align-items:center}
+button.btn{background:linear-gradient(180deg,var(--sky-300),var(--sky-500));color:#fff;border:none;padding:10px 12px;border-radius:10px;cursor:pointer;font-weight:600;box-shadow:0 8px 18px rgba(42,167,224,0.14);transition:all .18s}
+button.ghost{background:transparent;color:var(--dark);border:1px solid rgba(42,167,224,0.12)}
+.preview{border-radius:10px;overflow:hidden;min-height:320px;padding:18px;display:flex;flex-direction:column;gap:12px}
+.palette{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:12px}
+.color{border-radius:10px;height:120px;position:relative;display:flex;flex-direction:column;justify-content:flex-end;padding:10px;color:white;font-weight:700;cursor:pointer;box-shadow:0 8px 20px rgba(10,35,60,0.06);transition:transform .14s}
+.color:hover{transform:translateY(-6px) scale(1.02)}
+.lock{position:absolute;top:8px;left:8px;background:rgba(255,255,255,0.18);padding:6px;border-radius:8px;border:none;color:white}
+.copy{position:absolute;top:8px;right:8px;background:rgba(255,255,255,0.18);padding:6px;border-radius:8px;border:none;color:white}
+.badge{font-size:12px;opacity:0.95}
+.controls .tools{display:flex;gap:8px;flex-wrap:wrap}
+@media(max-width:980px){main.grid{grid-template-columns:1fr} .preview{min-height:240px} .color{height:100px}}
+@keyframes floaty{0%{transform:translateY(0)}50%{transform:translateY(-6px)}100%{transform:translateY(0)}}
+</style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="logo">DT</div>
+        <div>
+          <h1>DaTools — Random Color Generator</h1>
+          <p class="lead">Generate random palettes, lock colors, copy HEX/RGB, export as PNG/JSON. Fast and offline.</p>
+        </div>
+      </div>
+      <div class="muted">Made by <strong>Syed Afnan SAV</strong> • toolplus9@gmail.com</div>
+    </header>
+
+    <div class="card">
+      <main class="grid">
+        <section class="controls">
+
+          <div>
+            <label>Palette size</label>
+            <div class="row">
+              <select id="paletteSize" class="css-code"><option>3</option><option>4</option><option selected>5</option><option>6</option><option>8</option></select>
+              <label style="margin-left:8px;" class="muted">Press <strong>Space</strong> to generate quickly</label>
+            </div>
+          </div>
+
+          <div>
+            <label>Options</label>
+            <div class="tools" style="margin-top:8px">
+              <button class="btn" id="generate">Generate</button>
+              <button class="btn ghost" id="randomizeOne">Randomize unlocked</button>
+              <button class="btn ghost" id="savePalette">Save palette</button>
+              <button class="btn ghost" id="clearSaved">Clear saved</button>
+            </div>
+          </div>
+
+          <div>
+            <label>Saved Palettes</label>
+            <div id="saved" class="muted">No saved palettes yet.</div>
+          </div>
+
+          <div style="margin-top:8px">
+            <label>Export</label>
+            <div class="tools" style="margin-top:8px">
+              <button class="btn" id="downloadPNG">Download PNG</button>
+              <button class="btn" id="downloadJSON">Download JSON</button>
+            </div>
+          </div>
+
+        </section>
+
+        <aside>
+          <div class="preview card">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div class="muted">Palette preview</div>
+              <div class="muted">Count: <span id="count">5</span></div>
+            </div>
+
+            <div class="palette" id="palette" style="margin-top:12px"></div>
+
+          </div>
+        </aside>
+
+      </main>
+    </div>
+  </div>
+
+<script>
+  // Helpers
+  const $ = id=>document.getElementById(id);
+  function randHex(){ return '#'+Math.floor(Math.random()*16777215).toString(16).padStart(6,'0').toUpperCase(); }
+  function hexToRgb(hex){ hex = hex.replace('#',''); if(hex.length===3) hex = hex.split('').map(c=>c+c).join(''); const r=parseInt(hex.slice(0,2),16), g=parseInt(hex.slice(2,4),16), b=parseInt(hex.slice(4,6),16); return {r,g,b}; }
+  function getContrastYIQ(hex){ try{ const {r,g,b} = hexToRgb(hex); const yiq = ((r*299)+(g*587)+(b*114))/1000; return yiq >= 128 ? '#000' : '#fff'; }catch(e){ return '#000'; } }
+
+  // State
+  let palette = []; // {hex, locked}
+
+  // Elements
+  const paletteEl = $('palette');
+  const generateBtn = $('generate');
+  const paletteSize = $('paletteSize');
+  const countLabel = $('count');
+  const randomizeOne = $('randomizeOne');
+  const savePalette = $('savePalette');
+  const savedEl = $('saved');
+  const clearSaved = $('clearSaved');
+  const downloadPNG = $('downloadPNG');
+  const downloadJSON = $('downloadJSON');
+
+  function initPalette(n=5){ palette = Array.from({length:n}, ()=>({hex: randHex(), locked:false})); renderPalette(); }
+  function renderPalette(){ paletteEl.innerHTML=''; palette.forEach((c,idx)=>{
+    const d=document.createElement('div'); d.className='color'; d.style.background = c.hex; d.title = c.hex; d.dataset.index = idx;
+    const lockBtn = document.createElement('button'); lockBtn.className='lock'; lockBtn.textContent = c.locked? '🔒' : '🔓'; lockBtn.addEventListener('click', (e)=>{ e.stopPropagation(); palette[idx].locked = !palette[idx].locked; renderPalette(); });
+    const copyBtn = document.createElement('button'); copyBtn.className='copy'; copyBtn.textContent='Copy'; copyBtn.addEventListener('click', (e)=>{ e.stopPropagation(); navigator.clipboard.writeText(c.hex); copyBtn.textContent='Copied'; setTimeout(()=>copyBtn.textContent='Copy',900); });
+    const label = document.createElement('div'); label.className='badge'; label.style.color = getContrastYIQ(c.hex); label.textContent = c.hex;
+    d.appendChild(lockBtn); d.appendChild(copyBtn); d.appendChild(label);
+    d.addEventListener('click', ()=>{ navigator.clipboard.writeText(c.hex); label.textContent='Copied!'; setTimeout(()=>label.textContent = c.hex,700); });
+    paletteEl.appendChild(d);
+  }); countLabel.textContent = palette.length; savedEl.textContent = loadSaved().length ? '' : 'No saved palettes yet.'; }
+
+  generateBtn.addEventListener('click', ()=>{ const n = parseInt(paletteSize.value)||5; palette = Array.from({length:n}, (_,i)=> palette[i] && palette[i].locked ? palette[i] : {hex: randHex(), locked: false}); renderPalette(); });
+  randomizeOne.addEventListener('click', ()=>{ palette = palette.map(p=> p.locked ? p : {hex: randHex(), locked:false}); renderPalette(); });
+
+  // save/load palettes in localStorage
+  function saveCurrent(){ const arr = (loadSaved()||[]); arr.unshift(palette.map(p=>p.hex)); localStorage.setItem('saved_palettes', JSON.stringify(arr)); renderSaved(); }
+  function loadSaved(){ try{ return JSON.parse(localStorage.getItem('saved_palettes')||'[]'); }catch(e){ return []; } }
+  function renderSaved(){ const s = loadSaved(); if(!s.length){ savedEl.textContent = 'No saved palettes yet.'; return; } savedEl.innerHTML = ''; s.forEach((p,idx)=>{ const btn = document.createElement('button'); btn.className='btn ghost'; btn.textContent = p.join(', '); btn.addEventListener('click', ()=>{ palette = p.map(h=>({hex:h, locked:false})); renderPalette(); }); savedEl.appendChild(btn); }); }
+  savePalette.addEventListener('click', ()=>{ saveCurrent(); renderSaved(); }); clearSaved.addEventListener('click', ()=>{ localStorage.removeItem('saved_palettes'); renderSaved(); });
+
+  // export PNG
+  downloadPNG.addEventListener('click', ()=>{
+    const cols = palette.length; const sw = 300, sh = 300; const padding = 20; const w = cols*sw + padding*2; const h = sh + 140; const c=document.createElement('canvas'); c.width=w; c.height=h; const ctx = c.getContext('2d'); ctx.fillStyle = '#ffffff'; ctx.fillRect(0,0,w,h);
+    palette.forEach((p,i)=>{ const x = padding + i*sw; const y = 20; ctx.fillStyle = p.hex; ctx.fillRect(x,y,sw,sh); ctx.fillStyle = getContrastYIQ(p.hex); ctx.font = '22px sans-serif'; ctx.fillText(p.hex, x+12, y+sh+36); const rgb = hexToRgb(p.hex); ctx.font='16px sans-serif'; ctx.fillText(`rgb(${rgb.r},${rgb.g},${rgb.b})`, x+12, y+sh+64); });
+    const a=document.createElement('a'); a.href = c.toDataURL('image/png'); a.download = 'palette.png'; a.click(); });
+
+  downloadJSON.addEventListener('click', ()=>{ const payload = palette.map(p=>p.hex); const blob = new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}); const url = URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='palette.json'; a.click(); URL.revokeObjectURL(url); });
+
+  // keyboard: space to generate
+  window.addEventListener('keydown', e=>{ if(e.code==='Space'){ e.preventDefault(); generateBtn.click(); } });
+
+  // init
+  initPalette(parseInt(paletteSize.value)); renderSaved();
+
+</script>
+</body>
+</html>
