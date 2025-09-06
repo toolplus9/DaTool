@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Color Blind Simulator — DaTools</title>
+  <meta name="description" content="Simulate common color vision deficiencies (protanopia, deuteranopia, tritanopia, achromatopsia) in the browser. Upload an image, compare side-by-side, adjust intensity, and download results. DaTools theme." />
+  <meta name="keywords" content="color blind simulator, protanopia, deuteranopia, tritanopia, achromatopsia, accessibility, DaTools" />
+  <style>
+    :root{--sky-50:#eaf6ff;--sky-300:#7fd0ff;--sky-500:#2aa7e0;--dark:#0b2030;--muted:#6b7b86;--card:rgba(255,255,255,0.95);--glass:rgba(255,255,255,0.6);--card-shadow:0 10px 30px rgba(10,35,60,0.08);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial}
+    *{box-sizing:border-box}
+    body{margin:0;background:linear-gradient(180deg,var(--sky-50),#fff 35%);color:var(--dark);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:28px}
+    .container{width:1100px;max-width:100%}
+    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--sky-300),var(--sky-500));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:18px;box-shadow:0 12px 30px rgba(42,167,224,0.16);animation:floaty 6s ease-in-out infinite}
+    h1{margin:0;font-size:18px}
+    p.lead{margin:0;color:var(--muted);font-size:13px}
+    .card{background:var(--card);padding:16px;border-radius:12px;box-shadow:var(--card-shadow)}
+    main.grid{display:grid;grid-template-columns:1fr 420px;gap:18px}
+    .controls{display:flex;flex-direction:column;gap:12px}
+    label{font-size:13px;color:var(--muted)}
+    .row{display:flex;gap:8px;align-items:center}
+    .css-code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:rgba(11,32,48,0.03);padding:8px;border-radius:8px;font-size:13px}
+    button.btn{background:linear-gradient(180deg,var(--sky-300),var(--sky-500));color:#fff;border:none;padding:10px 12px;border-radius:10px;cursor:pointer;font-weight:600;box-shadow:0 8px 18px rgba(42,167,224,0.14);transition:all .18s}
+    button.ghost{background:transparent;color:var(--dark);border:1px solid rgba(42,167,224,0.12)}
+    .preview-wrap{border-radius:10px;overflow:hidden;border:1px solid rgba(11,32,48,0.04)}
+    .preview{min-height:300px;display:flex;align-items:center;justify-content:center;background:#f6fbff}
+    canvas{max-width:100%;height:auto;display:block}
+    .controls .tools{display:flex;gap:8px;flex-wrap:wrap}
+    .muted{color:var(--muted)}
+    .small{font-size:13px;color:var(--muted)}
+    .sim-option{padding:8px 10px;border-radius:10px;border:1px solid rgba(11,32,48,0.04);cursor:pointer}
+    .sim-option.active{box-shadow:0 6px 18px rgba(42,167,224,0.12);border-color:var(--sky-500)}
+    .split{display:flex;gap:8px}
+    .split .pane{flex:1;display:flex;flex-direction:column;gap:8px}
+
+    @media(max-width:980px){main.grid{grid-template-columns:1fr} .preview{min-height:200px}}
+    @keyframes floaty{0%{transform:translateY(0)}50%{transform:translateY(-6px)}100%{transform:translateY(0)}}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="logo">DT</div>
+        <div>
+          <h1>DaTools — Color Blind Simulator</h1>
+          <p class="lead">Upload an image and preview how it appears to people with common color vision deficiencies. No API — runs entirely in your browser.</p>
+        </div>
+      </div>
+      <div class="muted">Made by <strong>Syed Afnan SAV</strong> • toolplus9@gmail.com</div>
+    </header>
+
+    <div class="card">
+      <main class="grid">
+        <section class="controls">
+
+          <div>
+            <label>Upload image</label>
+            <input id="file" type="file" accept="image/*" class="css-code" />
+            <div class="small">Supported: JPG, PNG, WEBP. Max size recommended 10MB.</div>
+          </div>
+
+          <div>
+            <label>Simulation</label>
+            <div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap">
+              <div class="sim-option active" data-key="normal">Normal</div>
+              <div class="sim-option" data-key="protanopia">Protanopia</div>
+              <div class="sim-option" data-key="deuteranopia">Deuteranopia</div>
+              <div class="sim-option" data-key="tritanopia">Tritanopia</div>
+              <div class="sim-option" data-key="achromatopsia">Achromatopsia</div>
+            </div>
+          </div>
+
+          <div>
+            <label>Intensity</label>
+            <input id="intensity" type="range" min="0" max="100" value="100" />
+            <div class="small">0 = no change, 100 = full simulation</div>
+          </div>
+
+          <div>
+            <label>Mode</label>
+            <div class="row" style="align-items:center">
+              <label style="display:flex;gap:8px;align-items:center"><input id="sideBySide" type="checkbox"/> <span class="small">Side-by-side comparison</span></label>
+              <label style="margin-left:auto;display:flex;gap:8px;align-items:center"><input id="autoFit" type="checkbox" checked/> <span class="small">Fit to width</span></label>
+            </div>
+          </div>
+
+          <div class="tools">
+            <button class="btn" id="download">Download simulated image</button>
+            <button class="btn ghost" id="downloadSide">Download side-by-side</button>
+            <button class="btn ghost" id="reset">Reset</button>
+          </div>
+
+          <div style="margin-top:10px">
+            <label>About</label>
+            <div class="small">This simulator uses color transformation matrices to approximate how images appear to different types of color blindness. It runs completely in the browser — no images are uploaded to any server.</div>
+          </div>
+
+        </section>
+
+        <aside>
+          <div class="preview-wrap card">
+            <div class="preview" id="previewArea">
+              <div class="split" id="splitView" style="width:100%">
+                <div class="pane" id="leftPane"><canvas id="canvasNormal"></canvas><div class="small">Normal</div></div>
+                <div class="pane" id="rightPane"><canvas id="canvasSim"></canvas><div class="small">Simulated</div></div>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+      </main>
+    </div>
+  </div>
+
+<script>
+  // Elements
+  const fileEl = document.getElementById('file');
+  const simOptions = document.querySelectorAll('.sim-option');
+  const intensityEl = document.getElementById('intensity');
+  const sideBySideEl = document.getElementById('sideBySide');
+  const autoFitEl = document.getElementById('autoFit');
+  const downloadBtn = document.getElementById('download');
+  const downloadSideBtn = document.getElementById('downloadSide');
+  const resetBtn = document.getElementById('reset');
+
+  const canvasNormal = document.getElementById('canvasNormal');
+  const canvasSim = document.getElementById('canvasSim');
+  const leftPane = document.getElementById('leftPane');
+  const rightPane = document.getElementById('rightPane');
+  const splitView = document.getElementById('splitView');
+
+  let img = new Image();
+  let currentSim = 'normal';
+
+  // Color transformation matrices (approximate)
+  // Source references: common simulation matrices used in many JS implementations
+  const matrices = {
+    normal: [
+      1,0,0,
+      0,1,0,
+      0,0,1
+    ],
+    protanopia: [
+      0.567,0.433,0,
+      0.558,0.442,0,
+      0,0.242,0.758
+    ],
+    deuteranopia: [
+      0.625,0.375,0,
+      0.7,0.3,0,
+      0,0.3,0.7
+    ],
+    tritanopia: [
+      0.95,0.05,0,
+      0,0.433,0.567,
+      0,0.475,0.525
+    ],
+    achromatopsia: [
+      0.299,0.587,0.114,
+      0.299,0.587,0.114,
+      0.299,0.587,0.114
+    ]
+  };
+
+  // Helpers
+  function applyMatrixToPixel(r,g,b,mat){
+    const nr = r*mat[0] + g*mat[1] + b*mat[2];
+    const ng = r*mat[3] + g*mat[4] + b*mat[5];
+    const nb = r*mat[6] + g*mat[7] + b*mat[8];
+    return [clamp(Math.round(nr),0,255), clamp(Math.round(ng),0,255), clamp(Math.round(nb),0,255)];
+  }
+  function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+
+  function setActiveOption(key){ simOptions.forEach(el=>{ el.classList.toggle('active', el.dataset.key===key);}); currentSim = key; render(); }
+
+  simOptions.forEach(opt=>{ opt.addEventListener('click', ()=>{ setActiveOption(opt.dataset.key); }); });
+
+  // load image
+  fileEl.addEventListener('change', e=>{
+    const f = e.target.files && e.target.files[0];
+    if(!f) return;
+    const reader = new FileReader();
+    reader.onload = ev=>{ img = new Image(); img.onload = ()=>{ fitCanvases(); render(); }; img.src = ev.target.result; };
+    reader.readAsDataURL(f);
+  });
+
+  // fit canvases to image or container
+  function fitCanvases(){
+    const maxW = 800; // limit to avoid too large canvas in browser
+    let w = img.width; let h = img.height;
+    if(autoFitEl.checked){ const containerW = Math.min(maxW, document.querySelector('.preview').clientWidth - 24); if(w>containerW){ const ratio = containerW/w; w = Math.round(w*ratio); h = Math.round(h*ratio); } }
+    [canvasNormal, canvasSim].forEach(c=>{ c.width = w; c.height = h; c.style.width = '100%'; });
+    leftPane.style.minHeight = (h+'px'); rightPane.style.minHeight = (h+'px');
+  }
+
+  // render function: draw normal and simulated
+  function render(){
+    const intensity = intensityEl.value/100;
+    const ctxN = canvasNormal.getContext('2d');
+    const ctxS = canvasSim.getContext('2d');
+    if(!img.src){ // clear
+      ctxN.clearRect(0,0,canvasNormal.width,canvasNormal.height);
+      ctxS.clearRect(0,0,canvasSim.width,canvasSim.height);
+      return;
+    }
+
+    // draw normal
+    ctxN.clearRect(0,0,canvasNormal.width,canvasNormal.height);
+    ctxN.drawImage(img,0,0,canvasNormal.width,canvasNormal.height);
+
+    // get image data
+    const iw = canvasNormal.width, ih = canvasNormal.height;
+    const imageData = ctxN.getImageData(0,0,iw,ih);
+    const data = imageData.data;
+
+    // get matrix
+    const mat = matrices[currentSim] || matrices.normal;
+
+    for(let i=0;i<data.length;i+=4){
+      const r = data[i], g = data[i+1], b = data[i+2];
+      const [nr,ng,nb] = applyMatrixToPixel(r,g,b,mat);
+      // interpolate between original and simulated by intensity
+      data[i]   = Math.round(r*(1-intensity) + nr*intensity);
+      data[i+1] = Math.round(g*(1-intensity) + ng*intensity);
+      data[i+2] = Math.round(b*(1-intensity) + nb*intensity);
+    }
+
+    // put to simulated canvas
+    ctxS.putImageData(imageData,0,0);
+
+    // side-by-side toggle
+    if(sideBySideEl.checked){ splitView.style.display='flex'; leftPane.style.display='flex'; rightPane.style.display='flex'; }
+    else { // single: show simulated canvas only (hide left)
+      splitView.style.display='flex'; leftPane.style.display='none'; rightPane.style.flex='1 1 auto'; }
+  }
+
+  intensityEl.addEventListener('input', render);
+  sideBySideEl.addEventListener('change', render);
+  autoFitEl.addEventListener('change', ()=>{ if(img.src) fitCanvases(); });
+
+  // download simulated image
+  downloadBtn.addEventListener('click', ()=>{
+    if(!img.src) return alert('Please upload an image first');
+    const a = document.createElement('a'); a.download = `simulated-${currentSim}.png`;
+    a.href = canvasSim.toDataURL('image/png'); a.click();
+  });
+
+  // download side-by-side
+  downloadSideBtn.addEventListener('click', ()=>{
+    if(!img.src) return alert('Please upload an image first');
+    const w = canvasNormal.width*2 + 10; const h = canvasNormal.height;
+    const tmp = document.createElement('canvas'); tmp.width = w; tmp.height = h; const tctx = tmp.getContext('2d');
+    // draw normal on left
+    tctx.fillStyle = '#ffffff'; tctx.fillRect(0,0,w,h);
+    tctx.drawImage(canvasNormal,0,0);
+    // separator
+    tctx.fillStyle = '#ffffff'; tctx.fillRect(canvasNormal.width,0,10,h);
+    // draw simulated on right
+    tctx.drawImage(canvasSim,canvasNormal.width+10,0);
+    const a = document.createElement('a'); a.download = `comparison-${currentSim}.png`; a.href = tmp.toDataURL('image/png'); a.click();
+  });
+
+  // reset
+  resetBtn.addEventListener('click', ()=>{
+    fileEl.value=''; img = new Image(); canvasNormal.getContext('2d').clearRect(0,0,canvasNormal.width,canvasNormal.height); canvasSim.getContext('2d').clearRect(0,0,canvasSim.width,canvasSim.height); setActiveOption('normal'); intensityEl.value=100; sideBySideEl.checked=true; autoFitEl.checked=true; splitView.style.display='flex'; leftPane.style.display='flex'; rightPane.style.display='flex'; });
+
+  // keyboard: allow left/right arrow to change simulation
+  window.addEventListener('keydown', e=>{
+    if(e.key==='ArrowRight' || e.key==='ArrowLeft'){
+      const keys = ['normal','protanopia','deuteranopia','tritanopia','achromatopsia'];
+      let i = keys.indexOf(currentSim);
+      if(i<0) i=0;
+      if(e.key==='ArrowRight') i = (i+1)%keys.length; else i = (i-1+keys.length)%keys.length;
+      setActiveOption(keys[i]);
+    }
+  });
+
+  // Initialize
+  setActiveOption('normal');
+
+</script>
+</body>
+</html>
