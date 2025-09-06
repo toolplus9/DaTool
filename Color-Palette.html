@@ -1,0 +1,505 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Color Palettes Explorer — DaTools</title>
+  <meta name="description" content="Explore thousands of beautiful color palettes. Copy HEX, favorite palettes, generate new palettes or create from a base color — all in your browser." />
+  <meta name="keywords" content="color palettes, color generator, hex colors, palette explorer, random palettes, DaTools" />
+  <meta property="og:title" content="Color Palettes Explorer — DaTools" />
+  <meta property="og:description" content="Explore thousands of beautiful color palettes. Copy HEX, favorite palettes, generate new palettes or create from a base color — all in your browser." />
+  <meta property="og:type" content="website" />
+  <meta name="author" content="DaTools / Syed Afnan SAV" />
+
+  <style>
+    :root{
+      --bg: #f8fbff;
+      --card: #ffffff;
+      --card-2: #f0f7ff;
+      --text: #1d3557;
+      --muted: #6c7a91;
+      --brand: #009dff;
+      --brand-2: #00c9ff;
+      --radius: 16px;
+      --shadow: 0 10px 30px rgba(0,0,0,0.07);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", Helvetica, Arial;
+      background: radial-gradient(900px 400px at 80% -10%, rgba(0,201,255,0.06), transparent),
+                  radial-gradient(700px 350px at -10% 110%, rgba(0,157,255,0.04), transparent),
+                  var(--bg);
+      color:var(--text);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+
+    .container{max-width:1200px;margin:36px auto;padding:0 18px}
+
+    header{
+      padding:18px;border-radius:18px; margin-bottom:18px;
+      background: linear-gradient(135deg, rgba(0,157,255,0.10), rgba(0,201,255,0.06));
+      border:1px solid rgba(0,0,0,0.03);
+      box-shadow: var(--shadow);
+      display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+    }
+    .brand {display:flex;align-items:center;gap:12px}
+    .logo{
+      width:56px;height:56px;border-radius:12px;
+      background: linear-gradient(90deg,var(--brand),var(--brand-2));
+      display:grid;place-items:center;color:#fff;font-weight:800;font-size:18px;box-shadow:0 6px 18px rgba(0,157,255,0.18);
+    }
+    .title h1{margin:0;font-size:20px}
+    .title p{margin:0;color:var(--muted);font-size:13px}
+
+    .top-controls{display:flex;gap:10px;align-items:center}
+    input.search{
+      padding:10px 14px;border-radius:12px;border:1px solid rgba(0,0,0,0.06);background:rgba(255,255,255,0.95);width:340px;
+    }
+    .btn{
+      padding:10px 14px;border-radius:12px;border:none;cursor:pointer;font-weight:700;
+      background:var(--card-2);
+    }
+    .btn.primary{
+      background:linear-gradient(90deg,var(--brand),var(--brand-2));color:#fff;position:relative;overflow:hidden;
+      box-shadow:0 8px 28px rgba(0,157,255,0.12);
+    }
+    .btn.primary::after{
+      content:"";position:absolute;top:-120%;left:-40%;width:60%;height:300%;transform:rotate(20deg);
+      background:linear-gradient(90deg,transparent,rgba(255,255,255,0.6),transparent);animation:shine 2.8s linear infinite;
+    }
+    @keyframes shine{to{left:140%}}
+
+    .controls-row{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0;align-items:center}
+    .small{padding:8px 10px;font-size:14px;border-radius:10px;border:1px solid rgba(0,0,0,0.06);background:var(--card-2)}
+
+    /* Grid */
+    .grid{
+      display:grid;grid-template-columns:repeat(3,1fr);gap:14px;
+    }
+    @media(max-width:1000px){.grid{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:640px){.grid{grid-template-columns:1fr}}
+
+    .palette-card{
+      background:var(--card);border-radius:12px;overflow:hidden;border:1px solid rgba(0,0,0,0.04);
+      box-shadow:var(--shadow);transition:transform .18s ease, box-shadow .18s ease;
+      display:flex;flex-direction:column;
+    }
+    .palette-card.loading{opacity:0.9;filter:blur(.2px)}
+    .palette-card:hover{transform:translateY(-6px); box-shadow: 0 18px 40px rgba(0,0,0,0.08)}
+
+    .colors{display:flex;height:78px}
+    .color{flex:1;position:relative;display:flex;align-items:flex-end;justify-content:center;padding:8px;color:rgba(255,255,255,0.95);
+      font-size:12px;font-weight:800;text-shadow:0 1px 2px rgba(0,0,0,0.25);cursor:pointer;transition:transform .12s ease}
+    .color:hover{transform:scale(1.02)}
+    .color .hex{background: rgba(0,0,0,0.28); padding:6px 8px;border-radius:999px;backdrop-filter: blur(3px);
+      opacity:0; transform:translateY(8px); transition: all .15s ease; font-size:12px}
+    .color:hover .hex{opacity:1; transform:translateY(0)}
+
+    .card-body{padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .meta{display:flex;gap:10px;align-items:center}
+    .palette-name{font-weight:800}
+    .meta .likes{color:var(--muted);font-size:13px}
+    .actions{margin-left:auto;display:flex;gap:8px;align-items:center}
+
+    .icon-btn{background:var(--card-2);border-radius:10px;padding:8px;border:none;cursor:pointer;display:inline-grid;place-items:center;font-weight:700;color:var(--brand)}
+
+    .empty{padding:30px;text-align:center;color:var(--muted);border-radius:12px;background:var(--card-2);margin-top:12px}
+
+    .sections{display:grid;grid-template-columns:1fr 320px;gap:18px;margin-top:22px}
+    @media(max-width:900px){.sections{grid-template-columns:1fr}}
+
+    .card-small{background:var(--card);padding:16px;border-radius:12px;box-shadow:var(--shadow)}
+    .muted{color:var(--muted);font-size:13px}
+
+    .tag{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(0,157,255,0.08);color:var(--brand);font-weight:700}
+
+    .toast{position:fixed;right:20px;bottom:22px;background:#0b1220;color:#fff;padding:10px 14px;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,0.2)}
+    .loader{display:inline-block;width:14px;height:14px;border-radius:50%;background:linear-gradient(90deg,var(--brand),var(--brand-2));animation: pulse 1s infinite}
+    @keyframes pulse{0%{transform:scale(.9);opacity:.8}50%{transform:scale(1.2);opacity:1}100%{transform:scale(.9);opacity:.8}}
+  </style>
+</head>
+<body>
+  <div class="container" id="app">
+    <header>
+      <div class="brand">
+        <div class="logo" aria-hidden>CP</div>
+        <div class="title">
+          <h1>DaTools — Color Palettes</h1>
+          <p>Explore thousands of palettes. Copy HEX, favorite, generate and download — all in your browser.</p>
+        </div>
+      </div>
+
+      <div class="top-controls">
+        <input id="search" class="search" placeholder="Search palettes or HEX (e.g. #f4a)..." aria-label="search palettes">
+        <button id="randomBtn" class="btn primary" title="Create a random palette">🎲 Random</button>
+      </div>
+    </header>
+
+    <div class="controls-row" aria-hidden>
+      <div class="tag">Trending</div>
+      <div style="flex:1"></div>
+      <button id="newFromColor" class="btn">Create from Color</button>
+      <input id="baseColor" type="color" value="#009dff" class="small" title="Pick base color">
+      <button id="showFavs" class="btn">❤️ Favorites</button>
+      <button id="clearFavs" class="btn">Clear Favorites</button>
+    </div>
+
+    <main>
+      <div id="grid" class="grid" aria-live="polite"></div>
+      <div id="empty" class="empty" style="display:none;">No palettes found. Try search or generate a random palette.</div>
+
+      <div class="sections">
+        <div class="card-small">
+          <h3 style="margin-top:0">How it works</h3>
+          <ol class="muted">
+            <li>Browse palettes — click a color to copy its HEX code.</li>
+            <li>Use Random or create from a base color to generate new palettes.</li>
+            <li>Favorite palettes — saved locally to your browser.</li>
+          </ol>
+        </div>
+
+        <div class="card-small">
+          <h3 style="margin-top:0">Features</h3>
+          <ul class="muted">
+            <li>Copy HEX with one click</li>
+            <li>Favorites stored locally</li>
+            <li>Download palette as PNG</li>
+            <li>Lazy load 2,500 palettes for fast startup</li>
+          </ul>
+        </div>
+      </div>
+    </main>
+
+    <footer style="margin-top:28px;text-align:center;color:var(--muted);font-size:13px">
+      Made with ❤️ for creators | Contact: <a href="mailto:toolplus9@gmail.com">toolplus9@gmail.com</a> — Credit: Syed Afnan SAV
+    </footer>
+  </div>
+
+  <div id="toast" class="toast" style="display:none"></div>
+
+  <script>
+    /*****************************************************************
+     * Color Palettes Explorer — DaTools
+     * - Lazy generates up to 2500 palettes (client-side) for performance.
+     * - Initial render: 100 palettes, then lazy-load 100 more on demand.
+     *****************************************************************/
+
+    // --- Config
+    const TOTAL_PALETTES = 2500;
+    const BATCH_SIZE = 100;       // how many to add per lazy batch
+    const INITIAL_LOAD = 100;     // initial palettes to render
+    const LS_KEY = "dt_pal_favs_v2";
+
+    // --- DOM
+    const grid = document.getElementById('grid');
+    const empty = document.getElementById('empty');
+    const toast = document.getElementById('toast');
+    const searchInput = document.getElementById('search');
+    const randomBtn = document.getElementById('randomBtn');
+    const newFromColorBtn = document.getElementById('newFromColor');
+    const baseColorInput = document.getElementById('baseColor');
+    const showFavsBtn = document.getElementById('showFavs');
+    const clearFavsBtn = document.getElementById('clearFavs');
+
+    // --- Utilities
+    function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+    function randInt(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
+    function showToast(msg,ms=1400){
+      toast.textContent=msg; toast.style.display='block';
+      clearTimeout(window._toastTimer); window._toastTimer = setTimeout(()=>toast.style.display='none', ms);
+    }
+    async function copyToClipboard(text){
+      try{ await navigator.clipboard.writeText(text); showToast(`Copied ${text}`); }
+      catch{ showToast('Copy failed'); }
+    }
+
+    // --- Color helpers
+    function componentToHex(c){ return c.toString(16).padStart(2,'0'); }
+    function rgbToHex(r,g,b){ return "#"+componentToHex(r)+componentToHex(g)+componentToHex(b); }
+    function hexToRgb(hex){
+      if(!hex) return null;
+      const h = hex.replace('#','');
+      if(h.length===3) return {r:parseInt(h[0]+h[0],16), g:parseInt(h[1]+h[1],16), b:parseInt(h[2]+h[2],16)};
+      if(h.length===6) return {r:parseInt(h.slice(0,2),16), g:parseInt(h.slice(2,4),16), b:parseInt(h.slice(4,6),16)};
+      return null;
+    }
+    function rgbToHsl(r,g,b){
+      r/=255;g/=255;b/=255;
+      const max=Math.max(r,g,b), min=Math.min(r,g,b); let h=0,s=0,l=(max+min)/2;
+      if(max!==min){
+        const d=max-min;
+        s = l>0.5 ? d/(2-max-min) : d/(max+min);
+        switch(max){ case r: h=(g-b)/d + (g<b?6:0); break; case g: h=(b-r)/d + 2; break; case b: h=(r-g)/d + 4; break; }
+        h *= 60;
+      }
+      return [Math.round(h), s, l];
+    }
+    function hslToHex(h,s,l){
+      s=clamp(s,0,1); l=clamp(l,0,1);
+      const a = s * Math.min(l,1-l);
+      const f = n => {
+        const k = (n + h/30) % 12;
+        const color = l - a * Math.max(Math.min(k-3,9-k,1), -1);
+        return Math.round(255*color).toString(16).padStart(2,'0');
+      };
+      return `#${f(0)}${f(8)}${f(4)}`;
+    }
+
+    // deterministic seeded RNG (so palettes feel stable across reloads)
+    function mulberry32(a) {
+      return function() {
+        var t = a += 0x6D2B79F5;
+        t = Math.imul(t ^ t >>> 15, t | 1);
+        t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+        return ((t ^ t >>> 14) >>> 0) / 4294967296;
+      }
+    }
+
+    // generate a palette from seed index
+    function genPalette(idx){
+      const rnd = mulberry32(idx + 1234567);
+      const baseHue = Math.floor(rnd()*360);
+      const s = 0.45 + rnd()*0.4; // saturation baseline
+      const l = 0.35 + rnd()*0.3; // lightness baseline
+      const colors = [];
+      for(let i=0;i<5;i++){
+        const nh = (baseHue + (i-2)*randInt(8,40) + Math.floor(rnd()*20)) % 360;
+        const ns = clamp(s + (rnd()-0.5)*0.18, 0.06, 0.95);
+        const nl = clamp(l + (rnd()-0.5)*0.3, 0.05, 0.95);
+        colors.push(hslToHex(nh,ns,nl));
+      }
+      const name = `Palette ${idx+1}`;
+      const likes = Math.floor((1 - rnd()*rnd()) * (50000));
+      return { name, colors, likes };
+    }
+
+    // palette from base color
+    function paletteFromBase(hex, idxSeed=0){
+      const rgb = hexToRgb(hex);
+      if(!rgb) return null;
+      const [h,s,l] = rgbToHsl(rgb.r,rgb.g,rgb.b);
+      const arr=[];
+      for(let i=0;i<5;i++){
+        const nh = (h + (i-2)*14 + idxSeed) % 360;
+        const ns = clamp(s + (i-2)*0.03, 0.05, 0.95);
+        const nl = clamp(l + (i-2)*0.06, 0.06, 0.95);
+        arr.push(hslToHex(nh,ns,nl));
+      }
+      return arr;
+    }
+
+    // localStorage favorites
+    function loadFavs(){ try{ return JSON.parse(localStorage.getItem(LS_KEY) || "[]"); }catch{ return [] } }
+    function saveFavs(arr){ localStorage.setItem(LS_KEY, JSON.stringify(arr)); }
+
+    function isFav(pal){
+      const favs = loadFavs();
+      return favs.some(f => JSON.stringify(f.colors) === JSON.stringify(pal.colors));
+    }
+    function toggleFav(pal){
+      const favs = loadFavs();
+      const idx = favs.findIndex(f => JSON.stringify(f.colors) === JSON.stringify(pal.colors));
+      if(idx===-1){ favs.push(pal); saveFavs(favs); showToast("Added to favorites"); }
+      else { favs.splice(idx,1); saveFavs(favs); showToast("Removed from favorites"); }
+      renderVisible();
+    }
+
+    // download palette as PNG
+    function downloadPaletteImage(pal){
+      const canvas = document.createElement('canvas'); canvas.width=800; canvas.height=240;
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width / pal.colors.length;
+      pal.colors.forEach((c,i)=>{ ctx.fillStyle=c; ctx.fillRect(i*w,0,w,canvas.height); });
+      ctx.fillStyle='rgba(255,255,255,0.9)'; ctx.font='20px sans-serif';
+      ctx.fillText(pal.name,16,28);
+      canvas.toBlob(blob => {
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+        a.download = (pal.name || "palette") + ".png"; a.click();
+      });
+    }
+
+    // ---- rendering ----
+    let renderedCount = 0;
+    let currentPalettes = []; // palettes currently in memory (object array)
+    let modeFavorites = false; // showing favorites view or all
+
+    function ensurePalettesGenerated(upto){
+      // generate palettes up to index 'upto' (exclusive)
+      const need = Math.max(0, upto - currentPalettes.length);
+      for(let i=0;i<need;i++){
+        const idx = currentPalettes.length;
+        currentPalettes.push(genPalette(idx));
+      }
+    }
+
+    function createCardElem(p, index){
+      const card = document.createElement('div'); card.className='palette-card';
+      const colorsEl = document.createElement('div'); colorsEl.className='colors';
+      p.colors.forEach((c)=>{
+        const col = document.createElement('div'); col.className='color'; col.style.background = c;
+        const rgb = hexToRgb(c) || {r:0,g:0,b:0};
+        const brightness = (rgb.r*299 + rgb.g*587 + rgb.b*114)/1000;
+        col.style.color = brightness > 160 ? '#111' : '#fff';
+        const hexSpan = document.createElement('span'); hexSpan.className='hex'; hexSpan.textContent = c.toUpperCase();
+        col.appendChild(hexSpan);
+        col.title = "Click to copy HEX";
+        col.addEventListener('click', (ev)=>{ ev.stopPropagation(); copyToClipboard(c.toUpperCase()); });
+        colorsEl.appendChild(col);
+      });
+
+      const body = document.createElement('div'); body.className='card-body';
+      const meta = document.createElement('div'); meta.className='meta';
+      const pname = document.createElement('div'); pname.className='palette-name'; pname.textContent = p.name;
+      const likes = document.createElement('div'); likes.className='likes muted'; likes.textContent = `❤ ${p.likes.toLocaleString()}`;
+      meta.appendChild(pname); meta.appendChild(likes);
+
+      const actions = document.createElement('div'); actions.className='actions';
+      const favBtn = document.createElement('button'); favBtn.className='icon-btn';
+      favBtn.innerHTML = isFav(p) ? '★' : '☆';
+      favBtn.title = "Favorite";
+      favBtn.addEventListener('click', (e)=>{ e.stopPropagation(); toggleFav(p); });
+      const dlBtn = document.createElement('button'); dlBtn.className='icon-btn'; dlBtn.innerHTML='⬇';
+      dlBtn.title = "Download";
+      dlBtn.addEventListener('click', (e)=>{ e.stopPropagation(); downloadPaletteImage(p); });
+
+      actions.appendChild(favBtn); actions.appendChild(dlBtn);
+      body.appendChild(meta); body.appendChild(actions);
+
+      card.appendChild(colorsEl); card.appendChild(body);
+
+      return card;
+    }
+
+    function renderBatch(start, count){
+      ensurePalettesGenerated(start + count);
+      const frag = document.createDocumentFragment();
+      const list = modeFavorites ? loadFavs() : currentPalettes;
+      for(let i=start; i<Math.min(list.length, start+count); i++){
+        const p = list[i];
+        const card = createCardElem(p,i);
+        frag.appendChild(card);
+      }
+      grid.appendChild(frag);
+      renderedCount = grid.children.length;
+    }
+
+    function renderVisible(){
+      // clear and render from start
+      grid.innerHTML = '';
+      renderedCount = 0;
+      if(modeFavorites){
+        const favs = loadFavs();
+        if(!favs.length){ empty.style.display='block'; grid.style.display='none'; return; } else { empty.style.display='none'; grid.style.display='grid'; }
+        for(let i=0;i<Math.min(favs.length, INITIAL_LOAD); i++){
+          grid.appendChild(createCardElem(favs[i], i));
+        }
+      } else {
+        empty.style.display='none'; grid.style.display='grid';
+        // ensure initial generation
+        ensurePalettesGenerated(INITIAL_LOAD);
+        renderBatch(0, INITIAL_LOAD);
+      }
+    }
+
+    // lazy loader using scroll
+    let loadingMore = false;
+    function tryLoadMore(){
+      if(modeFavorites) return;
+      if(loadingMore) return;
+      if(renderedCount >= TOTAL_PALETTES) return;
+      // check scroll near bottom
+      const scrollY = window.scrollY || window.pageYOffset;
+      const vh = window.innerHeight;
+      const fullH = document.documentElement.scrollHeight;
+      if(scrollY + vh > fullH - 600){ // near bottom
+        loadingMore = true;
+        // show tiny loader card(s)
+        const loader = document.createElement('div'); loader.className='palette-card loading';
+        loader.innerHTML = '<div style="height:78px;display:flex;align-items:center;justify-content:center"><div class="loader"></div></div><div style="padding:12px;">Loading...</div>';
+        grid.appendChild(loader);
+        setTimeout(()=>{
+          grid.removeChild(loader);
+          const nextStart = renderedCount;
+          const remaining = Math.min(BATCH_SIZE, TOTAL_PALETTES - renderedCount);
+          renderBatch(nextStart, remaining);
+          loadingMore = false;
+        }, 400);
+      }
+    }
+
+    // search
+    function searchPalettes(q){
+      q = q.trim().toLowerCase();
+      if(!q){ modeFavorites=false; renderVisible(); return; }
+      // generate on-the-fly a set to search from (we'll sample current + adjacents)
+      const pool = [];
+      // ensure some generated
+      ensurePalettesGenerated(800);
+      for(let i=0;i<currentPalettes.length;i++) pool.push(currentPalettes[i]);
+      // add some favorites
+      const favs = loadFavs(); favs.forEach(f=>pool.push(f));
+      // filter by name or hex token
+      const token = q.replace('#','');
+      const res = pool.filter(p=>{
+        if(p.name.toLowerCase().includes(q)) return true;
+        return p.colors.some(c=> c.replace('#','').includes(token));
+      });
+      // display results
+      grid.innerHTML=''; if(res.length===0){ empty.style.display='block'; grid.style.display='none'; } else { empty.style.display='none'; grid.style.display='grid'; }
+      res.slice(0, 500).forEach((p,i)=> grid.appendChild(createCardElem(p,i)));
+    }
+
+    // events
+    window.addEventListener('scroll', tryLoadMore);
+    randomBtn.addEventListener('click', ()=>{
+      const pal = genPalette(Date.now() % 1000000);
+      currentPalettes.unshift(pal);
+      const card = createCardElem(pal,0);
+      grid.insertBefore(card, grid.firstChild);
+      showToast('Random palette created');
+    });
+    newFromColorBtn.addEventListener('click', ()=>{
+      const base = baseColorInput.value;
+      const colors = paletteFromBase(base, randInt(1,99));
+      const pal = { name: `From ${base.toUpperCase()}`, colors, likes: randInt(100,9000) };
+      currentPalettes.unshift(pal);
+      grid.insertBefore(createCardElem(pal,0), grid.firstChild);
+      showToast('Generated from base color');
+    });
+    showFavsBtn.addEventListener('click', ()=>{
+      const favs = loadFavs();
+      if(!favs || favs.length===0){ showToast('No favorites yet'); return; }
+      modeFavorites = true; renderVisible();
+    });
+    clearFavsBtn.addEventListener('click', ()=>{
+      if(confirm('Clear all favorites?')){ saveFavs([]); showToast('Favorites cleared'); renderVisible(); }
+    });
+    searchInput.addEventListener('input', (e)=>{ const q=e.target.value; if(!q) { modeFavorites=false; renderVisible(); } else { searchPalettes(q); } });
+
+    // keyboard: enter in search -> random if empty
+    searchInput.addEventListener('keydown', e => { if(e.key==='Enter' && !searchInput.value.trim()) randomBtn.click(); });
+
+    // initial load
+    (function init(){
+      // seed some deterministic palettes
+      ensurePalettesGenerated(INITIAL_LOAD);
+      renderVisible();
+      // schedule background generation to pre-fill currentPalettes up to, say, 1000 in idle time
+      if('requestIdleCallback' in window){
+        requestIdleCallback(function idleGen(){
+          ensurePalettesGenerated(1000);
+        }, {timeout:2000});
+      } else {
+        setTimeout(()=> ensurePalettesGenerated(1000), 1200);
+      }
+      // show tip
+      setTimeout(()=> showToast('Tip: Click a color to copy HEX'), 700);
+    })();
+
+    // accessibility: fallback for older browsers
+    window.addEventListener('resize', ()=>{ /* layout will naturally adjust via CSS */ });
+  </script>
+</body>
+</html>
