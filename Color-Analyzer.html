@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Color Analyzer — DaTools</title>
+<meta name="description" content="Analyze colors: extract palette from image, find dominant colors, complementary/analogous/triadic palettes, contrast checks, and export results. DaTools theme." />
+<style>
+:root{--sky-50:#eaf6ff;--sky-300:#7fd0ff;--sky-500:#2aa7e0;--dark:#0b2030;--muted:#6b7b86;--card:rgba(255,255,255,0.96);--card-shadow:0 10px 30px rgba(10,35,60,0.06);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(180deg,var(--sky-50),#fff 35%);color:var(--dark);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:28px}
+.container{width:1100px;max-width:100%}
+header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.brand{display:flex;gap:12px;align-items:center}
+.logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--sky-300),var(--sky-500));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:18px;box-shadow:0 12px 30px rgba(42,167,224,0.16);animation:floaty 6s ease-in-out infinite}
+h1{margin:0;font-size:18px}
+.lead{margin:0;color:var(--muted);font-size:13px}
+.card{background:var(--card);padding:16px;border-radius:12px;box-shadow:var(--card-shadow)}
+main.grid{display:grid;grid-template-columns:1fr 420px;gap:18px}
+.controls{display:flex;flex-direction:column;gap:12px}
+label{font-size:13px;color:var(--muted)}
+.row{display:flex;gap:8px;align-items:center}
+input[type=color]{width:64px;height:44px;border-radius:10px;border:none;cursor:pointer}
+input[type=number], input[type=text], select, textarea{padding:10px;border-radius:8px;border:1px solid rgba(11,32,48,0.06);font-size:14px}
+button.btn{background:linear-gradient(180deg,var(--sky-300),var(--sky-500));color:#fff;border:none;padding:10px 12px;border-radius:10px;cursor:pointer;font-weight:600;box-shadow:0 8px 18px rgba(42,167,224,0.14);transition:transform .16s,box-shadow .16s}
+button.btn.ghost{background:transparent;color:var(--dark);border:1px solid rgba(42,167,224,0.12)}
+.preview{border-radius:10px;overflow:hidden;min-height:320px;padding:18px;display:flex;flex-direction:column;gap:12px}
+.preview img{max-width:100%;border-radius:8px}
+.swatch{width:100%;height:64px;border-radius:8px;display:flex;align-items:center;padding:8px;color:white;font-weight:700}
+.palette-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.palette-row{display:flex;gap:8px}
+.color-block{flex:1;border-radius:8px;height:72px;display:flex;align-items:center;justify-content:center;color:white;font-weight:700}
+.mini{font-size:12px;color:var(--muted)}
+.result{background:rgba(11,32,48,0.03);padding:10px;border-radius:8px}
+@media(max-width:980px){main.grid{grid-template-columns:1fr} .preview{min-height:240px}}
+@keyframes floaty{0%{transform:translateY(0)}50%{transform:translateY(-6px)}100%{transform:translateY(0)}}
+</style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="logo">DT</div>
+        <div>
+          <h1>DaTools — Color Analyzer</h1>
+          <p class="lead">Extract palettes and analyze colors from images or hex values — dominant colors, complements, contrast checks, and exports.</p>
+        </div>
+      </div>
+      <div class="muted">Made by <strong>Syed Afnan SAV</strong> • toolplus9@gmail.com</div>
+    </header>
+
+    <div class="card">
+      <main class="grid">
+        <section class="controls">
+
+          <div>
+            <label>Upload image (optional)</label>
+            <input id="file" type="file" accept="image/*" class="css-code" />
+            <div class="mini">Or enter a HEX (comma-separated) to analyze colors directly.</div>
+          </div>
+
+          <div>
+            <label>HEX input (comma separated)</label>
+            <textarea id="hexInput" rows="2" placeholder="#00A3FF, #FF7E5F" style="width:100%"></textarea>
+          </div>
+
+          <div>
+            <label>Extraction</label>
+            <div class="row">
+              <select id="algo" class="css-code"><option value="kmeans">K-Means (fast)</option><option value="median">Median Cut</option></select>
+              <input id="count" type="number" min="2" max="12" value="6" style="width:90px;margin-left:8px" />
+              <button class="btn" id="extract">Extract Palette</button>
+            </div>
+          </div>
+
+          <div>
+            <label>Actions</label>
+            <div class="row" style="margin-top:8px">
+              <button class="btn ghost" id="dominantBtn">Show dominant color</button>
+              <button class="btn ghost" id="complementBtn">Complementary palette</button>
+              <button class="btn ghost" id="analogsBtn">Analogous</button>
+              <button class="btn ghost" id="triadicBtn">Triadic</button>
+            </div>
+          </div>
+
+          <div style="margin-top:8px">
+            <label>Export</label>
+            <div class="row" style="margin-top:8px">
+              <button class="btn" id="exportJSON">Download JSON</button>
+              <button class="btn" id="exportCSV">Download CSV</button>
+              <button class="btn" id="exportPNG">Download swatches PNG</button>
+            </div>
+          </div>
+
+        </section>
+
+        <aside>
+          <div class="preview card">
+            <div id="previewArea">
+              <img id="uploadedImg" style="display:none"/>
+              <div id="noImage" class="mini">No image loaded — paste HEX values and click Extract Palette.</div>
+            </div>
+
+            <div style="margin-top:12px">
+              <div class="result"> 
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                  <div class="mini">Extracted Palette</div>
+                  <div class="mini">Count: <span id="exCount">0</span></div>
+                </div>
+
+                <div id="paletteHolder" style="margin-top:12px"></div>
+
+              </div>
+            </div>
+
+          </div>
+        </aside>
+
+      </main>
+    </div>
+  </div>
+
+<script>
+// Utility color functions
+function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+function hexToRgb(hex){ hex = hex.replace('#',''); if(hex.length===3) hex = hex.split('').map(c=>c+c).join(''); const r=parseInt(hex.slice(0,2),16), g=parseInt(hex.slice(2,4),16), b=parseInt(hex.slice(4,6),16); return {r,g,b}; }
+function rgbToHex(r,g,b){ return '#'+[r,g,b].map(x=>x.toString(16).padStart(2,'0')).join('').toUpperCase(); }
+function rgbToArray(rgb){ return [rgb.r, rgb.g, rgb.b]; }
+function arrayToRgb(arr){ return {r:arr[0], g:arr[1], b:arr[2]}; }
+function getContrastYIQ(hex){ try{ const {r,g,b}=hexToRgb(hex); const yiq = ((r*299)+(g*587)+(b*114))/1000; return yiq>=128?'#000':'#fff'; }catch(e){return '#000';} }
+
+// k-means simple implementation for color clustering
+function kmeans(data, k, maxIter=20){
+  // data: array of [r,g,b]
+  if(data.length===0) return [];
+  // init centers randomly
+  const centers = [];
+  for(let i=0;i<k;i++) centers.push(data[Math.floor(Math.random()*data.length)].slice());
+  let labels = new Array(data.length).fill(0);
+  for(let iter=0;iter<maxIter;iter++){
+    let moved=false;
+    // assign
+    for(let i=0;i<data.length;i++){
+      let best=0, bestd=Infinity;
+      for(let j=0;j<centers.length;j++){ const d = sqDist(data[i], centers[j]); if(d<bestd){bestd=d;best=j;} }
+      if(labels[i]!==best){ labels[i]=best; moved=true; }
+    }
+    // recompute centers
+    const sums = Array.from({length:k}, ()=>[0,0,0]); const counts = Array.from({length:k}, ()=>0);
+    for(let i=0;i<data.length;i++){ const l=labels[i]; sums[l][0]+=data[i][0]; sums[l][1]+=data[i][1]; sums[l][2]+=data[i][2]; counts[l]++; }
+    for(let j=0;j<k;j++){ if(counts[j]>0){ centers[j][0]=Math.round(sums[j][0]/counts[j]); centers[j][1]=Math.round(sums[j][1]/counts[j]); centers[j][2]=Math.round(sums[j][2]/counts[j]); } }
+    if(!moved) break;
+  }
+  // return centers sorted by population
+  const pop = Array.from({length:k}, ()=>0); for(let i=0;i<labels.length;i++) pop[labels[i]]++;
+  const zipped = centers.map((c,i)=>({c, count:pop[i]})); zipped.sort((a,b)=>b.count-a.count);
+  return zipped.map(z=>z.c);
+}
+function sqDist(a,b){ const dx=a[0]-b[0], dy=a[1]-b[1], dz=a[2]-b[2]; return dx*dx+dy*dy+dz*dz; }
+
+// median cut simple palette (fast-ish)
+function medianCut(data, k){
+  // data: array of [r,g,b]
+  if(data.length===0) return [];
+  let boxes = [{pixels: data}];
+  while(boxes.length<k){
+    // find box with largest range
+    let idx=0, maxRange=0;
+    for(let i=0;i<boxes.length;i++){
+      const box=boxes[i]; const rvals=box.pixels.map(p=>p[0]); const gvals=box.pixels.map(p=>p[1]); const bvals=box.pixels.map(p=>p[2]); const range = Math.max(...rvals)-Math.min(...rvals) + Math.max(...gvals)-Math.min(...gvals) + Math.max(...bvals)-Math.min(...bvals);
+      if(range>maxRange){ maxRange=range; idx=i; }
+    }
+    const box = boxes[idx]; if(!box) break;
+    // determine channel with largest spread
+    const rvals=box.pixels.map(p=>p[0]); const gvals=box.pixels.map(p=>p[1]); const bvals=box.pixels.map(p=>p[2]);
+    const rRange = Math.max(...rvals)-Math.min(...rvals); const gRange = Math.max(...gvals)-Math.min(...gvals); const bRange = Math.max(...bvals)-Math.min(...bvals);
+    let channel = 0; if(gRange>=rRange && gRange>=bRange) channel=1; else if(bRange>=rRange && bRange>=gRange) channel=2;
+    // sort by channel and split
+    box.pixels.sort((a,b)=>a[channel]-b[channel]); const mid = Math.floor(box.pixels.length/2);
+    const aPixels = box.pixels.slice(0,mid); const bPixels = box.pixels.slice(mid);
+    boxes.splice(idx,1, {pixels:aPixels}, {pixels:bPixels});
+    if(boxes.length>k) boxes = boxes.slice(0,k);
+  }
+  // compute average color of each box
+  const centers = boxes.map(b=>{
+    const sum = b.pixels.reduce((acc,p)=>[acc[0]+p[0], acc[1]+p[1], acc[2]+p[2]], [0,0,0]); const n=b.pixels.length||1; return [Math.round(sum[0]/n), Math.round(sum[1]/n), Math.round(sum[2]/n)];
+  });
+  return centers;
+}
+
+// color harmony helpers (HSL)
+function rgbToHsl(r,g,b){ r/=255;g/=255;b/=255; const max=Math.max(r,g,b), min=Math.min(r,g,b); let h,s,l=(max+min)/2; if(max===min){h=s=0;} else{ const d=max-min; s = l>0.5 ? d/(2-max-min) : d/(max+min); switch(max){case r: h=(g-b)/d + (g<b?6:0); break; case g: h=(b-r)/d + 2; break; case b: h=(r-g)/d + 4; break;} h/=6;} return {h:h*360,s:s*100,l:l*100}; }
+function hslToRgb(h,s,l){ h/=360; s/=100; l/=100; if(s===0){ const v=Math.round(l*255); return {r:v,g:v,b:v}; } function hue2rgb(p,q,t){ if(t<0) t+=1; if(t>1) t-=1; if(t<1/6) return p+(q-p)*6*t; if(t<1/2) return q; if(t<2/3) return p+(q-p)*(2/3-t)*6; return p; } const q = l<0.5 ? l*(1+s) : l + s - l*s; const p = 2*l - q; const r = hue2rgb(p,q,h+1/3); const g = hue2rgb(p,q,h); const b = hue2rgb(p,q,h-1/3); return {r:Math.round(r*255), g:Math.round(g*255), b:Math.round(b*255)}; }
+function complementHex(hex){ const {r,g,b}=hexToRgb(hex); const hsl=rgbToHsl(r,g,b); const compH = (hsl.h + 180) % 360; const compRgb = hslToRgb(compH, hsl.s, hsl.l); return rgbToHex(compRgb.r, compRgb.g, compRgb.b); }
+function analogous(hex){ const {r,g,b}=hexToRgb(hex); const hsl=rgbToHsl(r,g,b); return [ -30, 0, 30 ].map(d=>{ const h = (hsl.h + d + 360)%360; const rgb=hslToRgb(h, hsl.s, hsl.l); return rgbToHex(rgb.r, rgb.g, rgb.b); }); }
+function triadic(hex){ const {r,g,b}=hexToRgb(hex); const hsl=rgbToHsl(r,g,b); return [ hsl.h, (hsl.h+120)%360, (hsl.h+240)%360 ].map(h=>{ const rgb=hslToRgb(h, hsl.s, hsl.l); return rgbToHex(rgb.r, rgb.g, rgb.b); }); }
+
+// DOM refs
+const fileEl = document.getElementById('file');
+const hexInput = document.getElementById('hexInput');
+const algo = document.getElementById('algo');
+const countEl = document.getElementById('count');
+const extractBtn = document.getElementById('extract');
+const previewArea = document.getElementById('previewArea');
+const uploadedImg = document.getElementById('uploadedImg');
+const noImage = document.getElementById('noImage');
+const paletteHolder = document.getElementById('paletteHolder');
+const exCount = document.getElementById('exCount');
+const dominantBtn = document.getElementById('dominantBtn');
+const complementBtn = document.getElementById('complementBtn');
+const analogsBtn = document.getElementById('analogsBtn');
+const triadicBtn = document.getElementById('triadicBtn');
+const exportJSON = document.getElementById('exportJSON');
+const exportCSV = document.getElementById('exportCSV');
+const exportPNG = document.getElementById('exportPNG');
+
+let currentPalette = [];
+
+fileEl.addEventListener('change', e=>{
+  const f = e.target.files && e.target.files[0]; if(!f) return; const reader = new FileReader(); reader.onload = ev=>{ uploadedImg.src = ev.target.result; uploadedImg.style.display='block'; noImage.style.display='none'; previewImageData(); }; reader.readAsDataURL(f);
+});
+
+function previewImageData(){ // draw image into canvas to read pixels
+  const img = uploadedImg; const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d'); canvas.width = img.naturalWidth; canvas.height = img.naturalHeight; ctx.drawImage(img,0,0); // sample pixels downscaled for performance
+  const maxSamples = 8000; let w = canvas.width, h = canvas.height; let step = Math.ceil(Math.sqrt((w*h)/maxSamples)); step = Math.max(1, step);
+  const data = [];
+  for(let y=0;y<h;y+=step){ for(let x=0;x<w;x+=step){ const p = ctx.getImageData(x,y,1,1).data; data.push([p[0],p[1],p[2]]); } }
+  previewArea.dataset.sampled = data.length; previewArea._pixels = data; }
+
+function parseHexInput(){ const txt = hexInput.value.trim(); if(!txt) return null; const parts = txt.split(',').map(s=>s.trim()).filter(Boolean); const out = []; for(const p of parts){ try{ const hex = p.startsWith('#')?p:'#'+p; const rgb = hexToRgb(hex); out.push([rgb.r, rgb.g, rgb.b]); }catch(e){} } return out.length?out:null; }
+
+extractBtn.addEventListener('click', ()=>{
+  let pixels = parseHexInput() || previewArea._pixels || [];
+  if(pixels.length===0){ alert('No image or HEX input found. Upload an image or paste HEX values.'); return; }
+  const k = Math.max(2, Math.min(12, parseInt(countEl.value)||6));
+  let centers = [];
+  if(algo.value==='kmeans') centers = kmeans(pixels, k);
+  else centers = medianCut(pixels, k);
+  currentPalette = centers.map(c=>rgbToHex(c[0], c[1], c[2])); renderPalette(currentPalette);
+});
+
+function renderPalette(palette){ paletteHolder.innerHTML=''; exCount.textContent = palette.length; if(!palette.length) return; const grid = document.createElement('div'); grid.className='palette-grid'; palette.forEach(hex=>{
+  const block = document.createElement('div'); block.className='color-block'; block.style.background = hex; const text = document.createElement('div'); text.style.color = getContrastYIQ(hex); text.innerHTML = `<div style="font-weight:700">${hex}</div><div class="mini">${hexToRgb(hex).r}, ${hexToRgb(hex).g}, ${hexToRgb(hex).b}</div>`; block.appendChild(text);
+  block.addEventListener('click', ()=>{ navigator.clipboard.writeText(hex); text.firstChild.textContent='Copied!'; setTimeout(()=>text.firstChild.textContent=hex,900); }); grid.appendChild(block);
+}); paletteHolder.appendChild(grid); }
+
+dominantBtn.addEventListener('click', ()=>{ if(currentPalette.length===0) return alert('Extract a palette first'); alert('Dominant color: '+currentPalette[0]); });
+complementBtn.addEventListener('click', ()=>{ if(currentPalette.length===0) return alert('Extract a palette first'); const comps = currentPalette.map(hex=>complementHex(hex)); renderPalette(comps); currentPalette = comps; });
+analogsBtn.addEventListener('click', ()=>{ if(currentPalette.length===0) return alert('Extract a palette first'); const all = []; currentPalette.forEach(hex=> all.push(...analogous(hex))); renderPalette(all.slice(0,12)); currentPalette = all.slice(0,12); });
+triadicBtn.addEventListener('click', ()=>{ if(currentPalette.length===0) return alert('Extract a palette first'); const all = []; currentPalette.forEach(hex=> all.push(...triadic(hex))); renderPalette(all.slice(0,12)); currentPalette = all.slice(0,12); });
+
+exportJSON.addEventListener('click', ()=>{ if(currentPalette.length===0) return alert('No palette to export'); const blob = new Blob([JSON.stringify(currentPalette,null,2)],{type:'application/json'}); const url = URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='palette.json'; a.click(); URL.revokeObjectURL(url); });
+exportCSV.addEventListener('click', ()=>{ if(currentPalette.length===0) return alert('No palette to export'); const rows = ['hex,r,g,b']; currentPalette.forEach(h=>{ const rgb=hexToRgb(h); rows.push(`${h},${rgb.r},${rgb.g},${rgb.b}`); }); const blob=new Blob([rows.join('\n')],{type:'text/csv'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='palette.csv'; a.click(); URL.revokeObjectURL(url); });
+
+exportPNG.addEventListener('click', ()=>{ if(currentPalette.length===0) return alert('No palette to export'); const cols = currentPalette.length; const sw = 240, sh = 240; const padding=20; const w = cols*sw + padding*2; const h = sh + 120; const canvas=document.createElement('canvas'); canvas.width=w; canvas.height=h; const ctx=canvas.getContext('2d'); ctx.fillStyle='#ffffff'; ctx.fillRect(0,0,w,h); currentPalette.forEach((hcol,i)=>{ const x = padding + i*sw; const y = 20; ctx.fillStyle = hcol; ctx.fillRect(x,y,sw,sh); ctx.fillStyle = getContrastYIQ(hcol); ctx.font='18px sans-serif'; ctx.fillText(hcol, x+12, y+sh+36); const rgb=hexToRgb(hcol); ctx.font='14px sans-serif'; ctx.fillText(`rgb(${rgb.r},${rgb.g},${rgb.b})`, x+12, y+sh+64); }); const a=document.createElement('a'); a.href=canvas.toDataURL('image/png'); a.download='palette.png'; a.click(); });
+
+// allow user to paste hex values and press Ctrl+Enter to extract
+hexInput.addEventListener('keydown', e=>{ if(e.key==='Enter' && (e.ctrlKey||e.metaKey)){ extractBtn.click(); } });
+
+</script>
+</body>
+</html>
