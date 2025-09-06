@@ -1,0 +1,436 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Gradient Generator — DaTools</title>
+  <meta name="description" content="Gradient generator — create, preview and copy CSS gradients. Theme: DaTools (white & sky blue)."/>
+  <style>
+    :root{
+      --sky-50: #eaf6ff;
+      --sky-100:#d4f0ff;
+      --sky-300:#7fd0ff;
+      --sky-500:#2aa7e0;
+      --dark:#0b2030;
+      --muted:#6b7b86;
+      --glass: rgba(255,255,255,0.6);
+      --card-shadow: 0 6px 18px rgba(10,35,60,0.08);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+
+    *{box-sizing:border-box}
+    body{margin:0; background:linear-gradient(180deg,var(--sky-50), #ffffff 35%); color:var(--dark); min-height:100vh; display:flex; align-items:center; justify-content:center; padding:28px}
+
+    .container{width:1100px; max-width:100%;}
+    header{display:flex; align-items:center; justify-content:space-between; margin-bottom:20px}
+    .brand{display:flex; gap:12px; align-items:center}
+    .logo{width:56px; height:56px; background:linear-gradient(135deg,var(--sky-300),var(--sky-500)); border-radius:12px; display:flex; align-items:center; justify-content:center; color:white; font-weight:700; font-size:20px; box-shadow:0 8px 24px rgba(42,167,224,0.18); transform:translateZ(0); animation:floaty 6s ease-in-out infinite;}
+    .brand h1{margin:0; font-size:18px}
+    .brand p{margin:0; font-size:12px; color:var(--muted)}
+
+    .card{background:rgba(255,255,255,0.9); border-radius:14px; padding:18px; box-shadow:var(--card-shadow)}
+
+    main.grid{display:grid; grid-template-columns: 1fr 440px; gap:18px; align-items:start}
+
+    .controls{display:flex; flex-direction:column; gap:12px}
+    .row{display:flex; gap:12px; align-items:center}
+    label{font-size:13px; color:var(--muted)}
+
+    .stops{display:flex; flex-direction:column; gap:10px; margin-top:8px}
+    .stop{display:flex; gap:8px; align-items:center}
+    .stop input[type=color]{width:52px; height:36px; border-radius:8px; border:none; cursor:pointer}
+    .stop input[type=range]{flex:1}
+    .stop .remove{background:transparent; border:none; font-size:18px; cursor:pointer; color:var(--muted)}
+
+    .controls .actions{display:flex; gap:8px}
+    button.btn{background:linear-gradient(180deg,var(--sky-300),var(--sky-500)); color:white; border:none; padding:10px 12px; border-radius:10px; cursor:pointer; font-weight:600; box-shadow:0 8px 18px rgba(42,167,224,0.18); transition:transform 220ms ease, box-shadow 220ms ease}
+    button.btn:active{transform:translateY(2px)}
+    .ghost{background:transparent; border:1px solid rgba(42,167,224,0.14); color:var(--dark)}
+
+    .preview-wrap{position:relative; min-height:360px; border-radius:12px; overflow:hidden;}
+    .preview{height:360px; border-radius:12px; display:flex; align-items:center; justify-content:center; color:white; font-size:14px; font-weight:600; text-shadow:0 4px 18px rgba(0,0,0,0.18); background-size:cover; background-position:center}
+    .css-code{background:rgba(11,32,48,0.03); border-radius:10px; padding:10px; font-family:ui-monospace, SFMono-Regular, Menlo, monospace; font-size:13px; color:var(--dark);}
+    .controls .small{font-size:12px; color:var(--muted)}
+
+    .presets{display:flex; gap:8px; flex-wrap:wrap}
+    .preset{width:56px; height:40px; border-radius:8px; cursor:pointer; border:1px solid rgba(11,32,48,0.04)}
+
+    .footer{display:flex; justify-content:space-between; gap:12px; margin-top:10px; align-items:center}
+
+    input[type=file]{width:100%}
+
+    @media (max-width:980px){
+      main.grid{grid-template-columns:1fr;}
+      .preview{height:260px}
+      .preview-wrap{min-height:260px}
+    }
+
+    @keyframes floaty{0%{transform:translateY(0)}50%{transform:translateY(-6px)}100%{transform:translateY(0)}}
+    .muted{color:var(--muted)}
+
+    /* small helpers */
+    .controls .inline{display:flex; gap:8px; align-items:center}
+    .switch{display:inline-flex; align-items:center; gap:8px}
+    .small-muted{font-size:12px; color:var(--muted)}
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="logo">DT</div>
+        <div>
+          <h1>DaTools — Gradient Generator</h1>
+          <p class="muted">Create beautiful CSS gradients — live preview, copy CSS, export PNG, overlay on your images.</p>
+        </div>
+      </div>
+      <div class="muted">Made by <strong>Syed Afnan SAV</strong> • contact: toolplus9@gmail.com</div>
+    </header>
+
+    <div class="card">
+      <main class="grid">
+        <section class="controls">
+
+          <div class="row" style="justify-content:space-between;align-items:flex-end">
+            <div style="flex:1">
+              <label>Gradient type & direction</label>
+              <div style="margin-top:6px; display:flex; gap:8px; align-items:center">
+                <select id="gType" class="css-code" style="padding:8px;border-radius:8px;border:1px solid rgba(11,32,48,0.04)">
+                  <option value="linear">Linear</option>
+                  <option value="radial">Radial</option>
+                </select>
+
+                <input id="angle" type="number" value="90" min="0" max="360" class="css-code" style="width:90px"/>
+                <span class="small-muted">deg</span>
+
+                <div style="margin-left:8px">
+                  <select id="dirPreset" class="css-code" style="padding:8px;border-radius:8px;border:1px solid rgba(11,32,48,0.04)">
+                    <option value="custom">Direction preset</option>
+                    <option value="0">Left → Right (0°)</option>
+                    <option value="90">Top → Bottom (90°)</option>
+                    <option value="45">Diagonal (45°)</option>
+                    <option value="135">Diagonal (135°)</option>
+                    <option value="radial">Radial center</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div style="text-align:right">
+              <label>Animated</label>
+              <div style="margin-top:6px"><input id="animateToggle" type="checkbox"/></div>
+            </div>
+          </div>
+
+          <div>
+            <label>Color stops</label>
+            <div class="stops" id="stops"></div>
+            <div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap">
+              <button class="btn" id="addStop">+ Add stop</button>
+              <button class="btn ghost" id="randomize">Random</button>
+              <button class="btn ghost" id="reverse">Reverse</button>
+              <button class="btn ghost" id="resetBtn">Reset</button>
+            </div>
+          </div>
+
+          <div>
+            <label>Presets</label>
+            <div class="presets" id="presets"></div>
+          </div>
+
+          <div class="row small" style="justify-content:space-between">
+            <div>
+              <label>Preview size</label>
+              <div style="margin-top:6px">
+                <input id="previewSize" type="range" min="160" max="840" value="360"/>
+              </div>
+            </div>
+            <div style="text-align:right">
+              <label>Stops count</label>
+              <div style="margin-top:6px"><span id="stopCount">0</span></div>
+            </div>
+          </div>
+
+          <div>
+            <label>Upload Image (optional)</label>
+            <input type="file" id="uploadImage" accept="image/*" class="css-code" style="padding:6px;border-radius:8px;border:1px solid rgba(11,32,48,0.08)"/>
+
+            <div style="display:flex; gap:8px; margin-top:8px; align-items:center">
+              <label class="switch"><input type="checkbox" id="overlayToggle"/> <span class="small-muted">Overlay gradient on image</span></label>
+              <div style="flex:1">
+                <label class="small-muted">Overlay opacity</label>
+                <input id="overlayOpacity" type="range" min="0" max="100" value="60" style="width:100%"/>
+              </div>
+            </div>
+
+            <div style="display:flex; gap:8px; margin-top:8px; align-items:center">
+              <label class="small-muted">Blend mode</label>
+              <select id="blendMode" class="css-code" style="padding:8px;border-radius:8px;border:1px solid rgba(11,32,48,0.04)">
+                <option value="source-over">Normal</option>
+                <option value="multiply">Multiply</option>
+                <option value="screen">Screen</option>
+                <option value="overlay">Overlay</option>
+                <option value="soft-light">Soft-light</option>
+              </select>
+            </div>
+
+          </div>
+
+          <div class="footer">
+            <div class="muted">Tip: click a preset to apply quickly</div>
+            <div style="display:flex; gap:8px">
+              <button class="btn ghost" id="exportPNG">Download PNG</button>
+              <button class="btn ghost" id="exportPNGNoImg">Download Gradient Only</button>
+              <button class="btn" id="copyCSS">Copy CSS</button>
+            </div>
+          </div>
+
+        </section>
+
+        <aside style="display:flex; flex-direction:column; gap:12px">
+          <div class="preview-wrap card" style="padding:12px; position:relative">
+            <img id="uploadedImg" style="max-width:100%; max-height:100%; border-radius:10px; display:none; position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; z-index:0"/>
+            <div id="preview" class="preview" style="border-radius:10px; overflow:hidden; width:100%; position:relative; z-index:1;">Preview</div>
+          </div>
+
+          <div>
+            <label>CSS</label>
+            <pre id="cssCode" class="css-code">/* CSS will appear here */</pre>
+          </div>
+        </aside>
+
+      </main>
+    </div>
+  </div>
+
+  <script>
+    // Helpers
+    const $ = id => document.getElementById(id);
+
+    // State
+    let stops = [ {color:'#00A3FF', pos:0}, {color:'#7B61FF', pos:100} ];
+    const presetsList = [ ['#ff7e5f','#feb47b'], ['#00c6ff','#0072ff'], ['#f953c6','#b91d73'], ['#5ee7df','#b490ca'], ['#89fffd','#ef32d9'], ['#43cea2','#185a9d'] ];
+
+    // Refs
+    const stopsWrap = $('stops');
+    const preview = $('preview');
+    const gType = $('gType');
+    const angleEl = $('angle');
+    const animateToggle = $('animateToggle');
+    const previewSize = $('previewSize');
+    const cssCode = $('cssCode');
+    const addStop = $('addStop');
+    const randomize = $('randomize');
+    const reverseBtn = $('reverse');
+    const presets = $('presets');
+    const stopCount = $('stopCount');
+    const copyCSS = $('copyCSS');
+    const exportPNG = $('exportPNG');
+    const exportPNGNoImg = $('exportPNGNoImg');
+    const uploadImage = $('uploadImage');
+    const uploadedImg = $('uploadedImg');
+    const overlayToggle = $('overlayToggle');
+    const overlayOpacity = $('overlayOpacity');
+    const blendMode = $('blendMode');
+    const dirPreset = $('dirPreset');
+    const resetBtn = $('resetBtn');
+
+    // Render stops UI
+    function renderStops(){
+      stopsWrap.innerHTML = '';
+      stops.forEach((s,i)=>{
+        const row = document.createElement('div'); row.className='stop';
+        const color = document.createElement('input'); color.type='color'; color.value=s.color; color.addEventListener('input', e=>{stops[i].color=e.target.value; update()});
+        const range = document.createElement('input'); range.type='range'; range.min=0; range.max=100; range.value=s.pos; range.addEventListener('input', e=>{stops[i].pos=+e.target.value; update();});
+        const posLabel = document.createElement('div'); posLabel.style.width='48px'; posLabel.style.fontSize='12px'; posLabel.style.color='var(--muted)'; posLabel.textContent=s.pos+'%';
+        range.addEventListener('input', ()=> posLabel.textContent = range.value+'%');
+        const remove = document.createElement('button'); remove.className='remove'; remove.innerHTML='✕'; remove.title='Remove stop'; remove.addEventListener('click', ()=>{ if(stops.length>2){stops.splice(i,1); renderStops(); update()} });
+        row.appendChild(color); row.appendChild(range); row.appendChild(posLabel); row.appendChild(remove);
+        stopsWrap.appendChild(row);
+      });
+      stopCount.textContent = stops.length;
+    }
+
+    function buildGradientCSS(){
+      const sorted = [...stops].sort((a,b)=>a.pos-b.pos);
+      const stopsStr = sorted.map(s=>`${s.color} ${s.pos}%`).join(', ');
+      if(gType.value === 'linear'){
+        return `linear-gradient(${angleEl.value}deg, ${stopsStr})`;
+      } else {
+        return `radial-gradient(circle at center, ${stopsStr})`;
+      }
+    }
+
+    // Update preview and css
+    function update(){
+      const grad = buildGradientCSS();
+      // If image uploaded and overlay enabled, combine
+      if(uploadedImg.src && overlayToggle.checked){
+        preview.style.background = `${grad}, url('${uploadedImg.src}')`;
+        preview.style.backgroundBlendMode = blendMode.value;
+        preview.style.opacity = 1;
+      } else if(uploadedImg.src && !overlayToggle.checked){
+        preview.style.background = `url('${uploadedImg.src}')`;
+        preview.style.backgroundBlendMode = 'normal';
+      } else {
+        preview.style.background = grad;
+        preview.style.backgroundBlendMode = 'normal';
+      }
+      preview.style.height = previewSize.value+'px';
+      // build CSS text (if overlay with image we include data URL only if present)
+      let cssText = '';
+      if(uploadedImg.src && overlayToggle.checked){
+        const opacity = overlayOpacity.value/100;
+        // create layered CSS using rgba stops if opacity <1 — we will approximate by using the gradient with rgba
+        const sorted = [...stops].sort((a,b)=>a.pos-b.pos);
+        const stopsRgba = sorted.map(s=>hexToRgba(s.color, overlayOpacity.value/100)).map((c,i)=>`${c} ${sorted[i].pos}%`).join(', ');
+        if(gType.value === 'linear') cssText = `background: linear-gradient(${angleEl.value}deg, ${stopsRgba}), url('${uploadedImg.src}');
+background-repeat:no-repeat; background-size:cover; background-blend-mode: ${blendMode.value};`;
+        else cssText = `background: radial-gradient(circle at center, ${stopsRgba}), url('${uploadedImg.src}');
+background-repeat:no-repeat; background-size:cover; background-blend-mode: ${blendMode.value};`;
+      } else if(uploadedImg.src && !overlayToggle.checked){
+        cssText = `background: url('${uploadedImg.src}');
+background-repeat:no-repeat; background-size:cover;`;
+      } else {
+        cssText = `background: ${buildGradientCSS()};
+background-repeat:no-repeat;`;
+      }
+      cssCode.textContent = cssText;
+      // apply overlay opacity live by using an extra overlay if needed
+      if(uploadedImg.src && overlayToggle.checked){
+        // we rely on CSS background layering — but to visually adjust opacity we modify the gradient stops to RGBA when rendering in preview
+        const rgbaStops = stops.map(s=>hexToRgba(s.color, overlayOpacity.value/100));
+        const rgbaStopsStr = [...stops].sort((a,b)=>a.pos-b.pos).map((s,i)=>`${hexToRgba(s.color, overlayOpacity.value/100)} ${s.pos}%`).join(', ');
+        if(gType.value === 'linear'){
+          preview.style.background = `linear-gradient(${angleEl.value}deg, ${rgbaStopsStr}), url('${uploadedImg.src}')`;
+        } else {
+          preview.style.background = `radial-gradient(circle at center, ${rgbaStopsStr}), url('${uploadedImg.src}')`;
+        }
+        preview.style.backgroundBlendMode = blendMode.value;
+      }
+      // animated
+      if(animateToggle.checked){ preview.style.animation = 'animateGradient 6s ease infinite'; preview.style.backgroundSize='200% 200%'; }
+      else { preview.style.animation=''; preview.style.backgroundSize='cover'; }
+    }
+
+    // Utility hex -> rgba
+    function hexToRgba(hex, alpha=1){
+      if(hex.startsWith('#')) hex = hex.slice(1);
+      const bigint = parseInt(hex,16);
+      const r = (bigint >> 16) & 255;
+      const g = (bigint >> 8) & 255;
+      const b = bigint & 255;
+      return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    }
+
+    // Presets
+    function renderPresets(){
+      presets.innerHTML='';
+      presetsList.forEach(arr=>{
+        const d = document.createElement('div'); d.className='preset'; d.style.background = `linear-gradient(90deg, ${arr.join(',')})`;
+        d.addEventListener('click', ()=>{ stops = arr.map((c,i)=>({color:c, pos: i===0?0:100})); renderStops(); update(); });
+        presets.appendChild(d);
+      });
+    }
+
+    // Add / randomize / reverse / reset
+    addStop.addEventListener('click', ()=>{ const newPos = 50; stops.push({color: randomColor(), pos:newPos}); renderStops(); update(); });
+    randomize.addEventListener('click', ()=>{ stops = Array.from({length: Math.max(2, Math.floor(Math.random()*4)+2)}, (_,i)=>({color: randomColor(), pos: Math.round(i*100/((Math.floor(Math.random()*3)+1)||1))})); renderStops(); update(); });
+    reverseBtn.addEventListener('click', ()=>{ stops.reverse(); renderStops(); update(); });
+    resetBtn.addEventListener('click', ()=>{ stops = [ {color:'#00A3FF', pos:0}, {color:'#7B61FF', pos:100} ]; angleEl.value = 90; gType.value='linear'; uploadedImg.src=''; uploadedImg.style.display='none'; uploadImage.value=''; overlayToggle.checked=false; overlayOpacity.value=60; blendMode.value='source-over'; renderStops(); update(); });
+
+    // Copy CSS
+    copyCSS.addEventListener('click', async ()=>{ try{ await navigator.clipboard.writeText(cssCode.textContent); copyCSS.textContent='Copied!'; setTimeout(()=>copyCSS.textContent='Copy CSS',1400);}catch(e){alert('Copy failed — select and copy the text manually.')}});
+
+    // Upload image handling
+    uploadImage.addEventListener('change', (e)=>{
+      const f = e.target.files && e.target.files[0];
+      if(!f) return;
+      const reader = new FileReader();
+      reader.onload = function(ev){ uploadedImg.src = ev.target.result; uploadedImg.style.display='block'; update(); }
+      reader.readAsDataURL(f);
+    });
+
+    // Direction preset
+    dirPreset.addEventListener('change',(e)=>{
+      const v = e.target.value;
+      if(v==='custom') return;
+      if(v==='radial'){ gType.value='radial'; angleEl.value=0; }
+      else { gType.value='linear'; angleEl.value = v; }
+      update();
+    });
+
+    // Overlay opacity / toggle / blend
+    overlayToggle.addEventListener('change', update);
+    overlayOpacity.addEventListener('input', update);
+    blendMode.addEventListener('change', update);
+    gType.addEventListener('change', update);
+    angleEl.addEventListener('input', update);
+    previewSize.addEventListener('input', ()=>{ preview.style.height = previewSize.value+'px'; update(); });
+    animateToggle.addEventListener('change', update);
+
+    // Export PNG (with image if overlay enabled and image present)
+    function drawGradientToCanvas(ctx, width, height, useOverlay=false, image=null, opacity=1, blend='source-over'){
+      // If image provided, draw it first
+      if(image){ ctx.drawImage(image,0,0,width,height); }
+
+      ctx.save();
+      ctx.globalCompositeOperation = blend;
+      ctx.globalAlpha = opacity;
+
+      if(gType.value==='linear'){
+        const angle = parseFloat(angleEl.value) * Math.PI/180;
+        const x = Math.cos(angle), y = Math.sin(angle);
+        const x1 = width/2 - x*width, y1 = height/2 - y*height;
+        const x2 = width/2 + x*width, y2 = height/2 + y*height;
+        const g = ctx.createLinearGradient(x1,y1,x2,y2);
+        const sorted = [...stops].sort((a,b)=>a.pos-b.pos);
+        sorted.forEach(s => g.addColorStop(s.pos/100, s.color));
+        ctx.fillStyle = g; ctx.fillRect(0,0,width,height);
+      } else {
+        const g = ctx.createRadialGradient(width/2,height/2,0,width/2,height/2,Math.max(width,height));
+        const sorted = [...stops].sort((a,b)=>a.pos-b.pos);
+        sorted.forEach(s => g.addColorStop(s.pos/100, s.color));
+        ctx.fillStyle = g; ctx.fillRect(0,0,width,height);
+      }
+
+      ctx.restore();
+    }
+
+    exportPNG.addEventListener('click', ()=>{
+      const w = 2400, h = 1600; // high-res
+      const canvas = document.createElement('canvas'); canvas.width=w; canvas.height=h; const ctx = canvas.getContext('2d');
+
+      if(uploadedImg.src && overlayToggle.checked){
+        // draw image first (we must create an Image object)
+        const img = new Image(); img.onload = () => {
+          // draw gradient on top with opacity and blend
+          drawGradientToCanvas(ctx,w,h,true,img, overlayOpacity.value/100, blendMode.value);
+          const a = document.createElement('a'); a.download = 'gradient-with-image.png'; a.href = canvas.toDataURL('image/png'); a.click();
+        }; img.src = uploadedImg.src;
+      } else if(uploadedImg.src && !overlayToggle.checked){
+        const img = new Image(); img.onload = ()=>{ ctx.drawImage(img,0,0,w,h); const a = document.createElement('a'); a.download='image.png'; a.href = canvas.toDataURL('image/png'); a.click(); }; img.src = uploadedImg.src;
+      } else {
+        // gradient only
+        drawGradientToCanvas(ctx,w,h,false,null,1,'source-over');
+        const a = document.createElement('a'); a.download='gradient.png'; a.href = canvas.toDataURL('image/png'); a.click();
+      }
+    });
+
+    exportPNGNoImg.addEventListener('click', ()=>{
+      const w=2400, h=1600; const canvas=document.createElement('canvas'); canvas.width=w; canvas.height=h; const ctx=canvas.getContext('2d'); drawGradientToCanvas(ctx,w,h,false,null,1,'source-over'); const a=document.createElement('a'); a.download='gradient.png'; a.href=canvas.toDataURL('image/png'); a.click(); });
+
+    // Utils
+    function randomColor(){ return '#'+Math.floor(Math.random()*16777215).toString(16).padStart(6,'0'); }
+
+    // initial
+    renderPresets(); renderStops(); update();
+
+    // animation keyframes (for preview) appended
+    const styleSheet = document.createElement('style'); styleSheet.innerHTML = `@keyframes animateGradient{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}`;
+    document.head.appendChild(styleSheet);
+
+  </script>
+</body>
+</html>
