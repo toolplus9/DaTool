@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>RGB → HEX Converter — DaTools</title>
+<meta name="description" content="Convert RGB colors to HEX (and back) with live preview, copy, randomize, presets and export. DaTools theme." />
+<style>
+  :root{--sky-50:#eaf6ff;--sky-300:#7fd0ff;--sky-500:#2aa7e0;--dark:#0b2030;--muted:#6b7b86;--card:rgba(255,255,255,0.96);--card-shadow:0 10px 30px rgba(10,35,60,0.06);font-family:Inter,system-ui,Segoe UI,Roboto,Arial}
+  *{box-sizing:border-box}
+  body{margin:0;background:linear-gradient(180deg,var(--sky-50),#fff 35%);color:var(--dark);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:28px}
+  .container{width:1100px;max-width:100%}
+  header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+  .brand{display:flex;gap:12px;align-items:center}
+  .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--sky-300),var(--sky-500));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:18px;box-shadow:0 12px 30px rgba(42,167,224,0.16);animation:floaty 6s ease-in-out infinite}
+  h1{margin:0;font-size:18px}
+  p.lead{margin:0;color:var(--muted);font-size:13px}
+  .card{background:var(--card);padding:16px;border-radius:12px;box-shadow:var(--card-shadow)}
+  main.grid{display:grid;grid-template-columns:1fr 420px;gap:18px}
+  .controls{display:flex;flex-direction:column;gap:12px}
+  label{font-size:13px;color:var(--muted)}
+  .row{display:flex;gap:8px;align-items:center}
+  input[type=range]{width:100%}
+  input[type=number], input[type=text]{padding:10px;border-radius:8px;border:1px solid rgba(11,32,48,0.06);font-size:14px}
+  .css-code{font-family:ui-monospace, SFMono-Regular, Menlo, monospace;background:rgba(11,32,48,0.03);padding:8px;border-radius:8px;font-size:13px}
+  button.btn{background:linear-gradient(180deg,var(--sky-300),var(--sky-500));color:#fff;border:none;padding:10px 12px;border-radius:10px;cursor:pointer;font-weight:600;box-shadow:0 8px 18px rgba(42,167,224,0.14);transition:all .18s}
+  button.ghost{background:transparent;color:var(--dark);border:1px solid rgba(42,167,224,0.12)}
+  .preview{border-radius:10px;overflow:hidden;min-height:220px;padding:18px;display:flex;flex-direction:column;gap:12px;justify-content:center;align-items:center}
+  .swatch{width:160px;height:160px;border-radius:12px;box-shadow:0 8px 24px rgba(10,35,60,0.06);border:1px solid rgba(11,32,48,0.04)}
+  .muted{color:var(--muted)}
+  .presets{display:flex;gap:8px;flex-wrap:wrap}
+  .preset{width:48px;height:36px;border-radius:8px;border:1px solid rgba(11,32,48,0.04);cursor:pointer}
+  .history{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+  .history .chip{padding:8px;border-radius:8px;border:1px solid rgba(11,32,48,0.04);cursor:pointer}
+  @media(max-width:980px){main.grid{grid-template-columns:1fr} .preview{min-height:160px}}
+  @keyframes floaty{0%{transform:translateY(0)}50%{transform:translateY(-6px)}100%{transform:translateY(0)}}
+</style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="logo">DT</div>
+        <div>
+          <h1>DaTools — RGB → HEX Converter</h1>
+          <p class="lead">Convert between RGB and HEX with live preview, copy, randomize and history. Same DaTools look.</p>
+        </div>
+      </div>
+      <div class="muted">Made by <strong>Syed Afnan SAV</strong> • toolplus9@gmail.com</div>
+    </header>
+
+    <div class="card">
+      <main class="grid">
+        <section class="controls">
+
+          <div>
+            <label>Enter RGB values</label>
+            <div style="display:flex;gap:8px;margin-top:8px;align-items:center">
+              <input id="rInput" type="number" min="0" max="255" value="0" style="width:80px" />
+              <input id="gInput" type="number" min="0" max="255" value="163" style="width:80px" />
+              <input id="bInput" type="number" min="0" max="255" value="255" style="width:80px" />
+              <button class="btn" id="toHex">Convert → HEX</button>
+            </div>
+            <div style="margin-top:8px;">
+              <label class="small muted">Or paste comma-separated RGB (e.g. 255, 102, 51)</label>
+              <input id="rgbText" type="text" placeholder="255, 102, 51" style="width:100%;margin-top:6px"/>
+            </div>
+          </div>
+
+          <div>
+            <label>HEX output</label>
+            <div style="display:flex;gap:8px;align-items:center;margin-top:8px">
+              <input id="hexOut" type="text" class="css-code" value="#00A3FF" style="flex:1" />
+              <button class="btn ghost" id="copyHex">Copy</button>
+            </div>
+            <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
+              <button class="btn ghost" id="toRgbBtn">HEX → RGB</button>
+              <button class="btn ghost" id="randomBtn">Random</button>
+              <button class="btn ghost" id="addHistory">Save</button>
+            </div>
+          </div>
+
+          <div>
+            <label>Presets</label>
+            <div class="presets" id="presets"></div>
+          </div>
+
+          <div>
+            <label>History</label>
+            <div class="history" id="history"></div>
+          </div>
+
+          <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
+            <button class="btn" id="exportPNG">Download swatch</button>
+            <button class="btn ghost" id="clearHistory">Clear history</button>
+          </div>
+
+        </section>
+
+        <aside>
+          <div class="preview card">
+            <div class="swatch" id="swatch"></div>
+            <div style="margin-top:12px;text-align:center">
+              <div id="hexLabel" style="font-weight:700;font-size:16px">#00A3FF</div>
+              <div id="rgbLabel" class="muted">rgb(0,163,255)</div>
+            </div>
+          </div>
+        </aside>
+
+      </main>
+    </div>
+  </div>
+
+<script>
+  // helpers
+  const $ = id=>document.getElementById(id);
+  function clamp(v,min,max){return Math.max(min,Math.min(max,v));}
+  function toHex(num){ return num.toString(16).toUpperCase().padStart(2,'0'); }
+  function rgbToHex(r,g,b){ return '#'+toHex(r)+toHex(g)+toHex(b); }
+  function hexToRgb(hex){ hex = hex.replace('#',''); if(hex.length===3) hex = hex.split('').map(c=>c+c).join(''); const r=parseInt(hex.slice(0,2),16), g=parseInt(hex.slice(2,4),16), b=parseInt(hex.slice(4,6),16); return {r,g,b}; }
+  function randomColor(){ return Math.floor(Math.random()*16777215); }
+
+  // elements
+  const rInput = $('rInput'), gInput = $('gInput'), bInput = $('bInput'), rgbText = $('rgbText');
+  const toHexBtn = $('toHex'), hexOut = $('hexOut'), copyHex = $('copyHex');
+  const toRgbBtn = $('toRgbBtn'), randomBtn = $('randomBtn'), swatch = $('swatch');
+  const hexLabel = $('hexLabel'), rgbLabel = $('rgbLabel'), presetsWrap = $('presets');
+  const addHistoryBtn = $('addHistory'), historyWrap = $('history'), exportPNG = $('exportPNG'), clearHistory = $('clearHistory');
+
+  const presets = ['#FF7E5F','#00C6FF','#F953C6','#5EE7DF','#89FFFD','#43CEA2'];
+
+  function updatePreviewFromRGB(r,g,b){ r=clamp(Math.round(r),0,255); g=clamp(Math.round(g),0,255); b=clamp(Math.round(b),0,255); const hex = rgbToHex(r,g,b); swatch.style.background = hex; hexOut.value = hex; hexLabel.textContent = hex; rgbLabel.textContent = `rgb(${r}, ${g}, ${b})`; }
+
+  function updatePreviewFromHex(hex){ try{ const {r,g,b} = hexToRgb(hex); updatePreviewFromRGB(r,g,b); }catch(e){ alert('Invalid HEX'); } }
+
+  // init presets
+  function renderPresets(){ presetsWrap.innerHTML=''; presets.forEach(h=>{ const d = document.createElement('div'); d.className='preset'; d.style.background=h; d.title=h; d.addEventListener('click', ()=>{ updatePreviewFromHex(h); }); presetsWrap.appendChild(d); }); }
+
+  // convert handlers
+  toHexBtn.addEventListener('click', ()=>{
+    // prefer rgbText if filled
+    const txt = rgbText.value.trim();
+    if(txt){ const parts = txt.split(',').map(s=>s.trim()).filter(Boolean); if(parts.length>=3){ const r = clamp(parseInt(parts[0])||0,0,255), g=clamp(parseInt(parts[1])||0,0,255), b=clamp(parseInt(parts[2])||0,0,255); updatePreviewFromRGB(r,g,b); rInput.value=r; gInput.value=g; bInput.value=b; return; } }
+    const r = clamp(parseInt(rInput.value)||0,0,255); const g = clamp(parseInt(gInput.value)||0,0,255); const b = clamp(parseInt(bInput.value)||0,0,255); updatePreviewFromRGB(r,g,b);
+  });
+
+  // live update when sliders changed
+  [rInput,gInput,bInput].forEach(inp=>inp.addEventListener('input', ()=>{ updatePreviewFromRGB(parseInt(rInput.value)||0, parseInt(gInput.value)||0, parseInt(bInput.value)||0); }));
+
+  copyHex.addEventListener('click', async ()=>{ try{ await navigator.clipboard.writeText(hexOut.value); copyHex.textContent='Copied'; setTimeout(()=>copyHex.textContent='Copy',1200); }catch(e){ alert('Copy failed'); } });
+
+  toRgbBtn.addEventListener('click', ()=>{ const h = hexOut.value.trim(); try{ const {r,g,b} = hexToRgb(h); rInput.value=r; gInput.value=g; bInput.value=b; updatePreviewFromHex(h);}catch(e){ alert('Invalid HEX'); } });
+
+  randomBtn.addEventListener('click', ()=>{ const n = randomColor(); const hex = '#'+n.toString(16).padStart(6,'0').toUpperCase(); hexOut.value = hex; updatePreviewFromHex(hex); });
+
+  // history
+  function addHistory(hex){ const chip = document.createElement('div'); chip.className='chip'; chip.textContent = hex; chip.style.background=hex; chip.style.color = getContrastYIQ(hex); chip.title='Click to apply'; chip.addEventListener('click', ()=>{ hexOut.value=hex; updatePreviewFromHex(hex); }); historyWrap.prepend(chip); }
+
+  addHistoryBtn.addEventListener('click', ()=>{ const h = hexOut.value.trim(); addHistory(h); localStorage.setItem('rgb_history', historyWrap.innerHTML); });
+  clearHistory.addEventListener('click', ()=>{ historyWrap.innerHTML=''; localStorage.removeItem('rgb_history'); });
+
+  // save/load history
+  window.addEventListener('load', ()=>{ renderPresets(); const saved = localStorage.getItem('rgb_history'); if(saved) historyWrap.innerHTML = saved; // reattach click handlers
+    Array.from(historyWrap.children).forEach(chip=>chip.addEventListener('click', ()=>{ const h=chip.textContent; hexOut.value=h; updatePreviewFromHex(h); })); updatePreviewFromHex(hexOut.value);
+  });
+
+  // export swatch as PNG
+  exportPNG.addEventListener('click', ()=>{
+    const w=800,h=800; const c=document.createElement('canvas'); c.width=w; c.height=h; const ctx=c.getContext('2d'); ctx.fillStyle = hexOut.value; ctx.fillRect(0,0,w,h); // draw label
+    ctx.fillStyle = getContrastYIQ(hexOut.value); ctx.font = '48px sans-serif'; ctx.fillText(hexOut.value,48,h-100); const a=document.createElement('a'); a.href=c.toDataURL('image/png'); a.download = (hexOut.value.replace('#','')||'swatch') + '.png'; a.click();
+  });
+
+  // contrast helper for label color
+  function getContrastYIQ(hex){ const {r,g,b} = hexToRgb(hex); const yiq = ((r*299)+(g*587)+(b*114))/1000; return yiq >= 128 ? '#000' : '#fff'; }
+
+  // utility: when paste into hex input allow immediate update
+  hexOut.addEventListener('input', ()=>{ const v = hexOut.value.trim(); if(/^#?[0-9A-Fa-f]{3}$/.test(v) || /^#?[0-9A-Fa-f]{6}$/.test(v)){ try{ updatePreviewFromHex(v); }catch(e){} } });
+
+  // keyboard: Enter on rgbText triggers convert
+  rgbText.addEventListener('keydown', e=>{ if(e.key==='Enter'){ toHexBtn.click(); } });
+
+  // initialize default
+  updatePreviewFromHex(hexOut.value);
+
+</script>
+</body>
+</html>
