@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Color Picker — DaTools</title>
+  <meta name="description" content="Pick any color and instantly get HEX, RGB, HSL, CMYK and more. Copy with one click using DaTools Color Picker.">
+  <style>
+    :root{
+      --bg:#f8fbff; --card:#ffffff; --card-2:#f0f7ff;
+      --text:#1d3557; --muted:#6c7a91;
+      --brand:#009dff; --brand-2:#00c9ff;
+      --ok:#18c964; --err:#ff4d6d;
+      --radius:18px; --shadow:0 6px 20px rgba(0,0,0,0.08);
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,sans-serif;background:var(--bg);color:var(--text);}
+    header{background:linear-gradient(90deg,var(--brand),var(--brand-2));padding:16px;text-align:center;color:#fff;font-size:20px;font-weight:700;}
+    .container{max-width:900px;margin:30px auto;padding:0 16px}
+    .hero{background:linear-gradient(135deg,#e0f2ff,#f8fbff);padding:30px;border-radius:var(--radius);box-shadow:var(--shadow);text-align:center}
+    .hero h1{margin:0;font-size:28px}
+    .hero p{margin:8px 0 0;color:var(--muted)}
+    .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px;margin-top:20px;text-align:center}
+    .picker-box{margin:20px auto;display:flex;flex-direction:column;align-items:center;gap:20px}
+    .preview{width:120px;height:120px;border-radius:var(--radius);box-shadow:var(--shadow);border:2px solid #eee}
+    input[type="color"]{width:100px;height:50px;border:none;cursor:pointer;border-radius:var(--radius);box-shadow:var(--shadow)}
+    .values{margin-top:10px}
+    .value-box{background:var(--card-2);padding:10px;border-radius:var(--radius);margin:10px 0;display:flex;justify-content:space-between;align-items:center;box-shadow:var(--shadow)}
+    .copy-btn{background:linear-gradient(90deg,var(--brand),var(--brand-2));border:none;padding:6px 12px;border-radius:var(--radius);color:#fff;cursor:pointer;transition:.3s}
+    .copy-btn:hover{transform:scale(1.05)}
+    .extras{margin-top:20px;text-align:left}
+    .history{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap}
+    .history div{width:30px;height:30px;border-radius:6px;cursor:pointer;border:1px solid #ccc}
+    .sample-text{margin-top:15px;padding:15px;border-radius:var(--radius);font-weight:600}
+    footer{margin-top:40px;padding:20px;text-align:center;font-size:14px;color:var(--muted)}
+  </style>
+</head>
+<body>
+<header>DaTools — Color Picker</header>
+<div class="container">
+  <section class="hero">
+    <h1>🎨 Advanced Color Picker</h1>
+    <p>Choose a color and explore HEX, RGB, HSL, CMYK, luminance, contrast, and more!</p>
+  </section>
+
+  <div class="card">
+    <div class="picker-box">
+      <input type="color" id="colorInput" value="#009dff">
+      <div class="preview" id="preview"></div>
+    </div>
+
+    <div class="values">
+      <div class="value-box"><span id="hexVal">#009dff</span><button class="copy-btn" onclick="copyText('hexVal')">Copy</button></div>
+      <div class="value-box"><span id="rgbVal">rgb(0,157,255)</span><button class="copy-btn" onclick="copyText('rgbVal')">Copy</button></div>
+      <div class="value-box"><span id="hslVal">hsl(201,100%,50%)</span><button class="copy-btn" onclick="copyText('hslVal')">Copy</button></div>
+      <div class="value-box"><span id="cmykVal">cmyk(100,38,0,0)</span><button class="copy-btn" onclick="copyText('cmykVal')">Copy</button></div>
+      <div class="value-box"><span id="nameVal">Blue</span><button class="copy-btn" onclick="copyText('nameVal')">Copy</button></div>
+      <div class="value-box"><span id="lumVal">Luminance: 0.61</span></div>
+    </div>
+
+    <div class="extras">
+      <button class="copy-btn" onclick="copyAll()">📋 Copy All</button>
+      <button class="copy-btn" onclick="randomColor()">🎲 Random Color</button>
+      <button class="copy-btn" onclick="downloadSwatch()">⬇️ Download Swatch</button>
+    </div>
+
+    <div class="sample-text" id="sampleText">Sample Text Preview</div>
+
+    <h3>Recent Colors:</h3>
+    <div class="history" id="history"></div>
+  </div>
+
+  <footer>
+    Made with ❤️ for creators | Contact: <a href="mailto:toolplus9@gmail.com">toolplus9@gmail.com</a><br>
+    Credit: Syed Afnan SAV
+  </footer>
+</div>
+
+<script>
+const colorInput=document.getElementById("colorInput");
+const preview=document.getElementById("preview");
+const hexVal=document.getElementById("hexVal");
+const rgbVal=document.getElementById("rgbVal");
+const hslVal=document.getElementById("hslVal");
+const cmykVal=document.getElementById("cmykVal");
+const nameVal=document.getElementById("nameVal");
+const lumVal=document.getElementById("lumVal");
+const sampleText=document.getElementById("sampleText");
+const historyBox=document.getElementById("history");
+let recentColors=[];
+
+// Helpers
+function hexToRgb(hex){const bigint=parseInt(hex.slice(1),16);return{r:(bigint>>16)&255,g:(bigint>>8)&255,b:bigint&255};}
+function rgbToHsl(r,g,b){r/=255;g/=255;b/=255;let max=Math.max(r,g,b),min=Math.min(r,g,b);let h,s,l=(max+min)/2;if(max==min){h=s=0;}else{let d=max-min;s=l>0.5?d/(2-max-min):d/(max+min);switch(max){case r:h=(g-b)/d+(g<b?6:0);break;case g:h=(b-r)/d+2;break;case b:h=(r-g)/d+4;break;}h/=6;}return{h:Math.round(h*360),s:Math.round(s*100),l:Math.round(l*100)};}
+function rgbToCmyk(r,g,b){let c=1-r/255,m=1-g/255,y=1-b/255,k=Math.min(c,m,y);c=(c-k)/(1-k)||0;m=(m-k)/(1-k)||0;y=(y-k)/(1-k)||0;return{c:Math.round(c*100),m:Math.round(m*100),y:Math.round(y*100),k:Math.round(k*100)};}
+function luminance(r,g,b){return (0.2126*r+0.7152*g+0.0722*b)/255;}
+function getContrastColor(r,g,b){return luminance(r,g,b)>0.5?"black":"white";}
+
+// Basic name list
+const names={"#009dff":"Blue","#ff0000":"Red","#00ff00":"Green","#000000":"Black","#ffffff":"White"};
+
+function updateColor(hex){
+  const {r,g,b}=hexToRgb(hex);
+  const hsl=rgbToHsl(r,g,b);
+  const cmyk=rgbToCmyk(r,g,b);
+  const lum=luminance(r,g,b).toFixed(2);
+  const name=names[hex.toLowerCase()]||"Custom";
+
+  preview.style.background=hex;
+  hexVal.textContent=hex;
+  rgbVal.textContent=`rgb(${r},${g},${b})`;
+  hslVal.textContent=`hsl(${hsl.h},${hsl.s}%,${hsl.l}%)`;
+  cmykVal.textContent=`cmyk(${cmyk.c},${cmyk.m},${cmyk.y},${cmyk.k})`;
+  nameVal.textContent=name;
+  lumVal.textContent="Luminance: "+lum;
+
+  sampleText.style.background=hex;
+  sampleText.style.color=getContrastColor(r,g,b);
+
+  // add to history
+  recentColors.unshift(hex);
+  if(recentColors.length>5) recentColors.pop();
+  renderHistory();
+}
+
+function renderHistory(){
+  historyBox.innerHTML="";
+  recentColors.forEach(c=>{
+    const div=document.createElement("div");
+    div.style.background=c;
+    div.title=c;
+    div.onclick=()=>updateColor(c);
+    historyBox.appendChild(div);
+  });
+}
+
+function copyText(id){navigator.clipboard.writeText(document.getElementById(id).textContent);alert("Copied!");}
+function copyAll(){let text=[hexVal.textContent,rgbVal.textContent,hslVal.textContent,cmykVal.textContent,nameVal.textContent].join(" | ");navigator.clipboard.writeText(text);alert("All values copied!");}
+function randomColor(){const hex="#"+Math.floor(Math.random()*16777215).toString(16).padStart(6,"0");colorInput.value=hex;updateColor(hex);}
+function downloadSwatch(){const canvas=document.createElement("canvas");canvas.width=100;canvas.height=100;const ctx=canvas.getContext("2d");ctx.fillStyle=hexVal.textContent;ctx.fillRect(0,0,100,100);const link=document.createElement("a");link.download="color.png";link.href=canvas.toDataURL();link.click();}
+
+colorInput.addEventListener("input",()=>updateColor(colorInput.value));
+updateColor(colorInput.value);
+</script>
+</body>
+</html>
