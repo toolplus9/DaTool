@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Shade Generator — DaTools</title>
+<meta name="description" content="Generate lighter and darker shades for any base color. Copy HEX/RGB, download palette as PNG/JSON/CSV. DaTools theme." />
+<style>
+:root{--sky-50:#eaf6ff;--sky-300:#7fd0ff;--sky-500:#2aa7e0;--dark:#0b2030;--muted:#6b7b86;--card:rgba(255,255,255,0.96);--card-shadow:0 10px 30px rgba(10,35,60,0.06);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(180deg,var(--sky-50),#fff 35%);color:var(--dark);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:28px}
+.container{width:1100px;max-width:100%}
+header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.brand{display:flex;gap:12px;align-items:center}
+.logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--sky-300),var(--sky-500));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:18px;box-shadow:0 12px 30px rgba(42,167,224,0.16);animation:floaty 6s ease-in-out infinite}
+h1{margin:0;font-size:18px}
+.lead{margin:0;color:var(--muted);font-size:13px}
+.card{background:var(--card);padding:16px;border-radius:12px;box-shadow:var(--card-shadow)}
+main.grid{display:grid;grid-template-columns:1fr 420px;gap:18px}
+.controls{display:flex;flex-direction:column;gap:12px}
+label{font-size:13px;color:var(--muted)}
+.row{display:flex;gap:8px;align-items:center}
+input[type=color]{width:64px;height:44px;border-radius:10px;border:none;cursor:pointer}
+input[type=number], input[type=text], select{padding:10px;border-radius:8px;border:1px solid rgba(11,32,48,0.06);font-size:14px}
+button.btn{background:linear-gradient(180deg,var(--sky-300),var(--sky-500));color:#fff;border:none;padding:10px 12px;border-radius:10px;cursor:pointer;font-weight:600;box-shadow:0 8px 18px rgba(42,167,224,0.14);transition:transform .16s,box-shadow .16s}
+button.btn.ghost{background:transparent;color:var(--dark);border:1px solid rgba(42,167,224,0.12)}
+button.btn:active{transform:translateY(2px)}
+.preview{border-radius:10px;overflow:hidden;min-height:320px;padding:18px;display:flex;flex-direction:column;gap:12px}
+.swatches{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px}
+.swatch{border-radius:10px;height:120px;display:flex;flex-direction:column;justify-content:flex-end;padding:10px;color:white;font-weight:700;box-shadow:0 8px 20px rgba(10,35,60,0.06);position:relative;overflow:hidden;cursor:pointer;transform:translateZ(0);transition:transform .18s, box-shadow .18s}
+.swatch:hover{transform:translateY(-6px) scale(1.02);box-shadow:0 18px 40px rgba(10,35,60,0.12)}
+.swatch .label{font-size:13px;text-shadow:0 6px 18px rgba(0,0,0,0.28)}
+.swatch .small{font-size:12px;opacity:0.92}
+.copyBtn{position:absolute;top:8px;right:8px;background:rgba(255,255,255,0.18);border-radius:8px;padding:6px 8px;font-weight:700;border:none;color:white;backdrop-filter:blur(4px);cursor:pointer}
+.controls .tools{display:flex;gap:8px;flex-wrap:wrap}
+.actions{display:flex;gap:8px;align-items:center}
+.meta{font-size:13px;color:var(--muted)}
+@media(max-width:980px){main.grid{grid-template-columns:1fr} .preview{min-height:240px} .swatch{height:100px}}
+@keyframes floaty{0%{transform:translateY(0)}50%{transform:translateY(-6px)}100%{transform:translateY(0)}}
+.footer-note{font-size:13px;color:var(--muted);margin-top:8px}
+</style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="logo">DT</div>
+        <div>
+          <h1>DaTools — Shade Generator</h1>
+          <p class="lead">Generate lighter and darker shades from a base color. Copy HEX/RGB, download palette as PNG / JSON / CSV.</p>
+        </div>
+      </div>
+      <div class="muted">Made by <strong>Syed Afnan SAV</strong> • toolplus9@gmail.com</div>
+    </header>
+
+    <div class="card">
+      <main class="grid">
+        <section class="controls">
+
+          <div>
+            <label>Base color</label>
+            <div class="row" style="align-items:center">
+              <input id="baseColor" type="color" value="#00A3FF" />
+              <input id="baseHex" type="text" value="#00A3FF" style="margin-left:8px;flex:1" />
+            </div>
+          </div>
+
+          <div>
+            <label>Shades configuration</label>
+            <div class="row">
+              <label class="meta">Lighter</label>
+              <input id="lighterCount" type="number" min="1" max="20" value="10" style="width:90px;margin-left:8px" />
+            </div>
+            <div class="row" style="margin-top:8px">
+              <label class="meta">Darker</label>
+              <input id="darkerCount" type="number" min="1" max="20" value="10" style="width:90px;margin-left:8px" />
+            </div>
+            <div class="row" style="margin-top:8px">
+              <label class="meta">Method</label>
+              <select id="method" style="margin-left:8px">
+                <option value="hsl">HSL lightness (recommended)</option>
+                <option value="mix">Mix with white/black</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label>Presets & quick actions</label>
+            <div class="tools" style="margin-top:8px">
+              <button class="btn" id="generate">Generate</button>
+              <button class="btn ghost" id="randomize">Random base</button>
+              <button class="btn ghost" id="invert">Invert base</button>
+              <button class="btn ghost" id="copyAll">Copy palette (HEX)</button>
+            </div>
+          </div>
+
+          <div style="margin-top:8px">
+            <label>Export</label>
+            <div class="tools" style="margin-top:8px">
+              <button class="btn" id="downloadPNG">Download PNG</button>
+              <button class="btn" id="downloadJSON">Download JSON</button>
+              <button class="btn ghost" id="downloadCSV">Download CSV</button>
+            </div>
+            <div class="footer-note">Tip: Click any swatch to copy HEX. Use the small button to copy RGB.</div>
+          </div>
+
+        </section>
+
+        <aside>
+          <div class="preview card">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div class="meta">Preview — shades generated from base color</div>
+              <div class="meta">Count: <span id="countLabel">21</span></div>
+            </div>
+
+            <div class="swatches" id="swatches" style="margin-top:12px"></div>
+
+          </div>
+        </aside>
+
+      </main>
+    </div>
+  </div>
+
+<script>
+  // Utilities: color conversions
+  function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+  function hexToRgb(hex){ hex = hex.replace('#',''); if(hex.length===3) hex = hex.split('').map(c=>c+c).join(''); const r=parseInt(hex.slice(0,2),16), g=parseInt(hex.slice(2,4),16), b=parseInt(hex.slice(4,6),16); return {r,g,b}; }
+  function rgbToHex(r,g,b){ return '#'+[r,g,b].map(x=>x.toString(16).padStart(2,'0')).join('').toUpperCase(); }
+  function rgbToHsl(r,g,b){ r/=255;g/=255;b/=255; const max=Math.max(r,g,b), min=Math.min(r,g,b); let h,s,l=(max+min)/2; if(max===min){h=s=0;} else{ const d=max-min; s = l>0.5 ? d/(2-max-min) : d/(max+min); switch(max){case r: h=(g-b)/d + (g<b?6:0); break; case g: h=(b-r)/d + 2; break; case b: h=(r-g)/d + 4; break;} h/=6;} return {h:h*360, s:s*100, l:l*100}; }
+  function hslToRgb(h,s,l){ h/=360; s/=100; l/=100; if(s===0){ const v=Math.round(l*255); return {r:v,g:v,b:v}; } function hue2rgb(p,q,t){ if(t<0) t+=1; if(t>1) t-=1; if(t<1/6) return p+(q-p)*6*t; if(t<1/2) return q; if(t<2/3) return p+(q-p)*(2/3-t)*6; return p; } const q = l<0.5 ? l*(1+s) : l + s - l*s; const p = 2*l - q; const r = hue2rgb(p,q,h+1/3); const g = hue2rgb(p,q,h); const b = hue2rgb(p,q,h-1/3); return {r:Math.round(r*255), g:Math.round(g*255), b:Math.round(b*255)}; }
+
+  // Mix two colors by weight (0..1)
+  function mixColors(c1, c2, weight){ const r=Math.round(c1.r*(1-weight)+c2.r*weight); const g=Math.round(c1.g*(1-weight)+c2.g*weight); const b=Math.round(c1.b*(1-weight)+c2.b*weight); return {r,g,b}; }
+
+  // DOM refs
+  const baseColor = document.getElementById('baseColor');
+  const baseHex = document.getElementById('baseHex');
+  const lighterCount = document.getElementById('lighterCount');
+  const darkerCount = document.getElementById('darkerCount');
+  const methodEl = document.getElementById('method');
+  const generateBtn = document.getElementById('generate');
+  const randomizeBtn = document.getElementById('randomize');
+  const invertBtn = document.getElementById('invert');
+  const copyAllBtn = document.getElementById('copyAll');
+  const swatchesWrap = document.getElementById('swatches');
+  const countLabel = document.getElementById('countLabel');
+  const downloadPNG = document.getElementById('downloadPNG');
+  const downloadJSON = document.getElementById('downloadJSON');
+  const downloadCSV = document.getElementById('downloadCSV');
+
+  // Sync color hex input
+  baseColor.addEventListener('input', e=>{ baseHex.value = e.target.value.toUpperCase(); });
+  baseHex.addEventListener('input', e=>{ const v=e.target.value.trim(); if(/^#?[0-9A-Fa-f]{3}$/.test(v) || /^#?[0-9A-Fa-f]{6}$/.test(v)){ baseColor.value = (v.startsWith('#')?v:'#'+v); } });
+
+  function generateShades(){
+    const base = baseColor.value.replace('#','').toUpperCase(); const lighterN = parseInt(lighterCount.value)||10; const darkerN = parseInt(darkerCount.value)||10; const method = methodEl.value;
+    countLabel.textContent = (lighterN + darkerN + 1);
+    const baseRgb = hexToRgb(base);
+    const baseHsl = rgbToHsl(baseRgb.r, baseRgb.g, baseRgb.b);
+
+    const shades = [];
+    // darker shades (from darkest to slightly darker)
+    for(let i=darkerN;i>=1;i--){ const t = i/(darkerN+1); if(method==='hsl'){ const newL = clamp(baseHsl.l*(1 - t*0.9),0,100); const rgb = hslToRgb(baseHsl.h, baseHsl.s, newL); shades.push({hex:rgbToHex(rgb.r,rgb.g,rgb.b), rgb}); } else { const mixed = mixColors(baseRgb, {r:0,g:0,b:0}, t*0.9); shades.push({hex:rgbToHex(mixed.r,mixed.g,mixed.b), rgb:mixed}); } }
+
+    // base in middle
+    shades.push({hex: '#'+base, rgb: baseRgb});
+
+    // lighter shades
+    for(let i=1;i<=lighterN;i++){ const t = i/(lighterN+1); if(method==='hsl'){ const newL = clamp(baseHsl.l + (100-baseHsl.l)*t*0.9,0,100); const rgb = hslToRgb(baseHsl.h, baseHsl.s, newL); shades.push({hex:rgbToHex(rgb.r,rgb.g,rgb.b), rgb}); } else { const mixed = mixColors(baseRgb, {r:255,g:255,b:255}, t*0.9); shades.push({hex:rgbToHex(mixed.r,mixed.g,mixed.b), rgb:mixed}); } }
+
+    renderShades(shades);
+    return shades;
+  }
+
+  function renderShades(shades){ swatchesWrap.innerHTML=''; shades.forEach((s, idx)=>{
+    const d = document.createElement('div'); d.className='swatch'; d.style.background = s.hex; d.title = s.hex + ' — Click to copy';
+    const lbl = document.createElement('div'); lbl.className='label'; lbl.textContent = s.hex; const small = document.createElement('div'); small.className='small'; small.textContent = `rgb(${s.rgb.r}, ${s.rgb.g}, ${s.rgb.b})`;
+    const copyBtn = document.createElement('button'); copyBtn.className='copyBtn'; copyBtn.textContent='RGB'; copyBtn.addEventListener('click', (ev)=>{ ev.stopPropagation(); navigator.clipboard.writeText(`${s.rgb.r}, ${s.rgb.g}, ${s.rgb.b}`).then(()=>{ copyBtn.textContent='Copied'; setTimeout(()=>copyBtn.textContent='RGB',900); }); });
+    d.appendChild(copyBtn);
+    d.appendChild(lbl); d.appendChild(small);
+    d.addEventListener('click', ()=>{ navigator.clipboard.writeText(s.hex).then(()=>{ lbl.textContent = 'Copied!'; setTimeout(()=>lbl.textContent = s.hex,900); }); });
+    swatchesWrap.appendChild(d);
+  }); }
+
+  // initial generate
+  let currentShades = generateShades();
+
+  generateBtn.addEventListener('click', ()=>{ currentShades = generateShades(); });
+  randomizeBtn.addEventListener('click', ()=>{ const n = Math.floor(Math.random()*16777215).toString(16).padStart(6,'0').toUpperCase(); baseColor.value = '#'+n; baseHex.value = '#'+n; currentShades = generateShades(); });
+  invertBtn.addEventListener('click', ()=>{ const rgb = hexToRgb(baseColor.value); const inv = {r:255-rgb.r, g:255-rgb.g, b:255-rgb.b}; const hex = rgbToHex(inv.r,inv.g,inv.b); baseColor.value = hex; baseHex.value = hex; currentShades = generateShades(); });
+
+  copyAllBtn.addEventListener('click', ()=>{ const hexList = currentShades.map(s=>s.hex).join(', '); navigator.clipboard.writeText(hexList).then(()=>{ copyAllBtn.textContent='Copied'; setTimeout(()=>copyAllBtn.textContent='Copy palette (HEX)',900); }); });
+
+  // download PNG: draw swatches as a horizontal strip
+  downloadPNG.addEventListener('click', ()=>{
+    const cols = currentShades.length; const sw = 200, sh = 200; const padding = 20; const w = cols*sw + padding*2; const h = sh + 120; const canvas = document.createElement('canvas'); canvas.width = w; canvas.height = h; const ctx = canvas.getContext('2d'); ctx.fillStyle = '#ffffff'; ctx.fillRect(0,0,w,h);
+    currentShades.forEach((s,i)=>{
+      const x = padding + i*sw; const y = 20; ctx.fillStyle = s.hex; ctx.fillRect(x,y,sw,sh);
+      ctx.fillStyle = (getContrastYIQ(s.hex)==='#000'?'#000':'#fff'); ctx.font = '20px sans-serif'; ctx.fillText(s.hex, x+12, y+sh+32);
+      const rgb = s.rgb; ctx.font='16px sans-serif'; ctx.fillText(`rgb(${rgb.r},${rgb.g},${rgb.b})`, x+12, y+sh+56);
+    });
+    const a = document.createElement('a'); a.href = canvas.toDataURL('image/png'); a.download = (baseHex.value.replace('#','')||'palette') + '.png'; a.click();
+  });
+
+  // download JSON
+  downloadJSON.addEventListener('click', ()=>{
+    const payload = currentShades.map(s=>({hex:s.hex, rgb:s.rgb})); const blob = new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download = (baseHex.value.replace('#','')||'palette') + '.json'; a.click(); URL.revokeObjectURL(url);
+  });
+
+  // download CSV
+  downloadCSV.addEventListener('click', ()=>{
+    const lines = ['hex,r,g,b']; currentShades.forEach(s=>{ lines.push(`${s.hex},${s.rgb.r},${s.rgb.g},${s.rgb.b}`); }); const blob = new Blob([lines.join('\n')],{type:'text/csv'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download = (baseHex.value.replace('#','')||'palette') + '.csv'; a.click(); URL.revokeObjectURL(url);
+  });
+
+  // contrast helper
+  function getContrastYIQ(hex){ try{ const {r,g,b} = hexToRgb(hex); const yiq = ((r*299)+(g*587)+(b*114))/1000; return yiq >= 128 ? '#000' : '#fff'; }catch(e){ return '#000'; } }
+
+  // keyboard support
+  document.addEventListener('keydown', e=>{ if(e.key==='g' && (e.ctrlKey||e.metaKey)){ e.preventDefault(); generateBtn.click(); } });
+
+</script>
+</body>
+</html>
